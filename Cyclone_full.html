@@ -13,15 +13,51 @@
 
   <style>
     /* ====== GLOBAL & BACKGROUND ====== */
+    :root {
+      --bg-solid: #0f172a;
+      --bg-grad1: #0f172a;
+      --bg-grad2: #1e293b;
+      --bg-grad3: #0b1021;
+      --bg-image: none;
+      --bg-type: color; /* color | gradient | image */
+    }
+
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       color: #eee;
-      /* CUSTOM BACKGROUND: change this URL or use gradient/color */
-      background: url('https://images.unsplash.com/photo-1534796636912-3b9170023211?q=80&w=1600&auto=format&fit=crop') center/cover no-repeat fixed;
-      /* Fallback gradient if image fails: */
-      /* background: linear-gradient(135deg, #0f172a, #1e293b, #0b1021); */
       min-height: 100vh;
+
+      background-color: var(--bg-solid);
+      background-image: var(--bg-image);
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+
+    body.bg-type-gradient {
+      background-image: linear-gradient(
+        135deg,
+        var(--bg-grad1),
+        var(--bg-grad2),
+        var(--bg-grad3)
+      );
+      background-size: 300% 300%;
+      animation: hackerShift 18s ease infinite;
+    }
+
+    @keyframes hackerShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    body.bg-type-image {
+      background-color: #000;
+      background-image: var(--bg-image);
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
     }
 
     /* ====== LAYOUT ====== */
@@ -158,7 +194,7 @@
 
     #board {
       width: 100%;
-      max-width: 520px;
+      max-width: 560px;
       margin: 0 auto;
     }
 
@@ -185,6 +221,74 @@
       border-radius: 8px;
       padding: 10px;
       background: #0e1220;
+    }
+
+    /* ====== MESSAGE BUBBLES ====== */
+    .msg-bubble {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: var(--user-msg-color, #6366f1);
+      color: #fff;
+      max-width: 100%;
+      word-wrap: break-word;
+      font-size: 0.95rem;
+    }
+
+    .msg-bubble.style-normal {
+      font-weight: 400;
+      font-style: normal;
+    }
+    .msg-bubble.style-bold {
+      font-weight: 700;
+      font-style: normal;
+    }
+    .msg-bubble.style-italic {
+      font-weight: 400;
+      font-style: italic;
+    }
+    .msg-bubble.style-bold-italic {
+      font-weight: 700;
+      font-style: italic;
+    }
+
+    /* ====== CHAT PANEL ====== */
+    .convo-item {
+      padding: 10px;
+      border-bottom: 1px solid #222;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .convo-item:hover {
+      background: rgba(255,255,255,0.04);
+    }
+    .convo-item.active {
+      background: rgba(99,102,241,0.2);
+    }
+
+    #chat-messages {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .chat-line {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      max-width: 85%;
+    }
+    .chat-line.self {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+    .chat-line.other {
+      align-self: flex-start;
+      align-items: flex-start;
+    }
+    .chat-sender {
+      font-size: 0.8rem;
+      color: #aaa;
+      margin-bottom: 2px;
     }
 
     /* ====== RESPONSIVE ====== */
@@ -262,9 +366,9 @@
 
         <!-- Extra tabs -->
         <button class="nav-btn" data-tab="firstaid">🩹 First Aid</button>
-        <button class="nav-btn" data-tab="drums">🥁 Drums</button>
+        <button class="nav-btn" data-tab="instruments">🎸 Instruments</button>
         <button class="nav-btn" data-tab="music">🎵 Music</button>
-        <button class="nav-btn" data-tab="fitness">💪 Fitness</button>
+        <button class="nav-btn" data-tab="sports">🏅 Sports</button>
         <button class="nav-btn" data-tab="study">📚 Study</button>
         <button class="nav-btn" data-tab="art">🎨 Art</button>
         <button class="nav-btn" data-tab="code">💻 Code</button>
@@ -279,39 +383,131 @@
       <section id="feed" class="active">
         <h2>🏠 Feed</h2>
         <p>Posts, updates, and community content will appear here.</p>
-        <!-- You can expand this later with real posts, forms, etc. -->
       </section>
 
       <!-- CHESS -->
       <section id="chess">
         <h2>♟️ Chess</h2>
 
-        <div class="chess-container">
-          <!-- Board -->
-          <div style="flex:1 1 320px; min-width:280px; max-width:520px;">
-            <div id="board" style="width:100%;"></div>
-            <div style="margin-top:12px; font-weight:600;">
-              Turn: <span id="turn-indicator">White</span>
+        <div style="display:flex; flex-wrap:wrap; gap:20px; align-items:flex-start;">
+
+          <!-- Board + player bars + clocks -->
+          <div style="flex:1 1 420px; min-width:360px; max-width:560px;">
+
+            <!-- Top player bar (AI / Opponent) -->
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; background:#111; border:1px solid #333; border-radius:8px 8px 0 0;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <div style="font-weight:700;">Opponent</div>
+                <div id="ai-badge" style="font-size:0.75rem; padding:2px 6px; border-radius:4px; background:#6366f1; color:#fff;">AI</div>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <div style="font-size:0.9rem; color:#aaa;">Rating: 1500</div>
+                <div id="clock-black" style="font-family:monospace; font-size:1.1rem; color:#f87171; min-width:56px; text-align:center;">10:00</div>
+              </div>
             </div>
-            <div style="margin-top:6px; font-size:0.9rem; color:#aaa;">
-              Status: <span id="game-status">Playing locally</span>
+
+            <!-- Board -->
+            <div id="board" style="width:100%; aspect-ratio:1 / 1; background:#000; border:1px solid #333;"></div>
+
+            <!-- Bottom player bar (You) -->
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; background:#111; border:1px solid #333; border-radius:0 0 8px 8px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <div style="font-weight:700;">You</div>
+                <div id="player-badge" style="font-size:0.75rem; padding:2px 6px; border-radius:4px; background:#22c55e; color:#fff;">Human</div>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <div style="font-size:0.9rem; color:#aaa;">Rating: 1500</div>
+                <div id="clock-white" style="font-family:monospace; font-size:1.1rem; color:#4ade80; min-width:56px; text-align:center;">10:00</div>
+              </div>
             </div>
+
+            <!-- Controls -->
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+              <button id="new-game-btn" style="padding:8px 12px; border-radius:6px; border:none; background:#6366f1; color:#fff; cursor:pointer;">New Game</button>
+              <button id="flip-board-btn" style="padding:8px 12px; border-radius:6px; border:none; background:#22c55e; color:#fff; cursor:pointer;">Flip Board</button>
+              <button id="copy-fen-btn" style="padding:8px 12px; border-radius:6px; border:none; background:#111; color:#ddd; border:1px solid #444; cursor:pointer;">Copy FEN</button>
+              <button id="toggle-ai-btn" style="padding:8px 12px; border-radius:6px; border:none; background:#111; color:#ddd; border:1px solid #444; cursor:pointer;">AI: On</button>
+            </div>
+
+            <div style="margin-top:8px; font-size:0.9rem; color:#aaa;">
+              Turn: <span id="turn-indicator">White</span> | 
+              Status: <span id="game-status">Playing</span> | 
+              Opening: <span id="opening-name">-</span>
+            </div>
+
+            <!-- Board color settings -->
+            <div style="margin-top:14px; border:1px solid #333; border-radius:8px; padding:10px; background:#0f1220;">
+              <div style="font-weight:700; margin-bottom:8px;">Board colors</div>
+              <div style="display:flex; flex-wrap:wrap; gap:12px;">
+                <div style="min-width:140px; flex:1 1 140px;">
+                  <label style="display:block; margin-bottom:4px; font-size:0.9rem;">Light squares</label>
+                  <input id="board-light-color" type="color" value="#f0d9b5"
+                         style="width:100%; height:36px; border:none; background:#111; border-radius:6px; cursor:pointer;">
+                </div>
+                <div style="min-width:140px; flex:1 1 140px;">
+                  <label style="display:block; margin-bottom:4px; font-size:0.9rem;">Dark squares</label>
+                  <input id="board-dark-color" type="color" value="#b58863"
+                         style="width:100%; height:36px; border:none; background:#111; border-radius:6px; cursor:pointer;">
+                </div>
+                <div style="min-width:140px; flex:1 1 140px;">
+                  <label style="display:block; margin-bottom:4px; font-size:0.9rem;">Piece style</label>
+                  <select id="piece-style" style="width:100%; padding:6px; border-radius:6px; border:1px solid #444; background:#111; color:#eee;">
+                    <option value="wikipedia">Wikipedia</option>
+                    <option value="alpha">Alpha</option>
+                  </select>
+                </div>
+              </div>
+              <div style="margin-top:8px;">
+                <button id="save-board-colors" style="padding:6px 10px; border-radius:6px; border:none; background:#22c55e; color:#fff; cursor:pointer;">Save board colors</button>
+                <span id="board-colors-saved" style="margin-left:8px; color:#86efac; display:none;">Saved!</span>
+              </div>
+            </div>
+
           </div>
 
-          <!-- Openings list -->
+          <!-- Move list + openings -->
           <div style="flex:1 1 300px; min-width:260px;">
-            <h3 style="margin-top:0;">Openings (rated)</h3>
-            <div id="openings-list" style="max-height:420px; overflow:auto; border:1px solid #444; border-radius:8px; padding:8px; background:#111;">
-              <div style="padding:8px; color:#aaa;">Loading openings…</div>
-            </div>
+
+            <!-- Move list -->
+            <h3 style="margin-top:0;">Moves</h3>
+            <div id="move-list" style="max-height:260px; overflow:auto; border:1px solid #444; border-radius:8px; padding:8px; background:#111; font-family:monospace; font-size:0.95rem;"></div>
+
+            <!-- Openings list -->
+            <h3 style="margin-top:18px;">Openings (rated)</h3>
+            <div id="openings-list" style="max-height:320px; overflow:auto; border:1px solid #444; border-radius:8px; padding:8px; background:#111;"></div>
           </div>
+
         </div>
       </section>
 
       <!-- CHAT -->
       <section id="chat">
         <h2>💬 Chat</h2>
-        <p>Real-time chat and DMs will appear here.</p>
+
+        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
+          <button id="new-dm-btn" style="padding:8px 12px; border-radius:6px; border:1px solid #444; background:#111; color:#ddd; cursor:pointer;">
+            + New DM
+          </button>
+          <button id="new-group-btn" style="padding:8px 12px; border-radius:6px; border:1px solid #444; background:#111; color:#ddd; cursor:pointer;">
+            + New Group
+          </button>
+        </div>
+
+        <div style="display:flex; gap:16px; min-height:420px;">
+          <!-- Conversations list -->
+          <div id="conversations-panel" style="width:220px; border:1px solid #444; border-radius:8px; background:#0e1220; overflow:auto;">
+            <div style="padding:10px; color:#aaa;">No conversations yet.</div>
+          </div>
+
+          <!-- Chat area -->
+          <div id="chat-panel" style="flex:1; border:1px solid #444; border-radius:8px; background:#0e1220; display:flex; flex-direction:column;">
+            <div id="chat-messages" style="flex:1; padding:10px; overflow:auto;"></div>
+            <div style="display:flex; gap:8px; padding:10px; border-top:1px solid #333;">
+              <input id="chat-input" type="text" placeholder="Type a message…" style="flex:1; padding:8px 10px; border-radius:6px; border:1px solid #444; background:#111; color:#eee;">
+              <button id="chat-send" style="padding:8px 14px; border-radius:6px; border:none; background:#6366f1; color:#fff; cursor:pointer;">Send</button>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- AI -->
@@ -347,6 +543,106 @@
       <section id="profile">
         <h2>👤 Profile</h2>
         <p>Your profile, stats, and settings will appear here.</p>
+
+        <h3 style="margin-top:24px;">💬 Message style</h3>
+        <div style="display:flex; flex-wrap:wrap; gap:16px; margin-top:10px;">
+
+          <!-- Color picker -->
+          <div style="min-width:200px; flex:1 1 200px;">
+            <label style="display:block; margin-bottom:6px; font-weight:600;">Message bubble color</label>
+            <input id="msg-color" type="color" value="#6366f1"
+                   style="width:100%; height:44px; border:none; background:#111; border-radius:6px; cursor:pointer;">
+          </div>
+
+          <!-- Text style -->
+          <div style="min-width:200px; flex:1 1 200px;">
+            <label style="display:block; margin-bottom:6px; font-weight:600;">Text style</label>
+            <select id="msg-style" style="width:100%; padding:10px; border-radius:6px; border:1px solid #444; background:#111; color:#eee;">
+              <option value="normal">Normal</option>
+              <option value="bold">Bold</option>
+              <option value="italic">Italic</option>
+              <option value="bold-italic">Bold + Italic</option>
+            </select>
+          </div>
+
+          <!-- Preview -->
+          <div style="min-width:260px; flex:1 1 260px;">
+            <label style="display:block; margin-bottom:6px; font-weight:600;">Preview</label>
+            <div id="msg-preview" style="padding:10px; border-radius:8px; background:#111; border:1px solid #444;">
+              <div class="msg-bubble" style="display:inline-block; padding:8px 12px; border-radius:12px; background:#6366f1; color:#fff; max-width:100%;">
+                This is how your messages will look.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;">
+          <button id="save-msg-style" style="padding:8px 14px; border-radius:6px; border:none; background:#22c55e; color:#fff; cursor:pointer;">
+            Save message style
+          </button>
+          <span id="msg-saved-note" style="margin-left:10px; color:#86efac; display:none;">Saved!</span>
+        </div>
+
+        <!-- BACKGROUND SETTINGS -->
+        <h3 style="margin-top:28px;">🎨 Background settings</h3>
+
+        <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:12px;">
+          <!-- Background type -->
+          <div style="min-width:200px; flex:1 1 200px;">
+            <label style="display:block; margin-bottom:6px; font-weight:600;">Background type</label>
+            <select id="bg-type" style="width:100%; padding:8px; border-radius:6px; border:1px solid #444; background:#111; color:#eee;">
+              <option value="color">Solid color</option>
+              <option value="gradient">Gradient</option>
+              <option value="image">Image from device</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Solid color -->
+        <div id="bg-color-section" style="margin-top:12px; min-width:200px; flex:1 1 200px;">
+          <label style="display:block; margin-bottom:6px; font-weight:600;">Background color</label>
+          <input id="bg-color" type="color" value="#0f172a"
+                 style="width:100%; height:44px; border:none; background:#111; border-radius:6px; cursor:pointer;">
+        </div>
+
+        <!-- Gradient colors -->
+        <div id="bg-gradient-section" style="display:none; margin-top:12px; flex-wrap:wrap; gap:12px;">
+          <div style="min-width:160px; flex:1 1 160px;">
+            <label style="display:block; margin-bottom:6px; font-weight:600;">Gradient Color 1</label>
+            <input id="bg-grad1" type="color" value="#0f172a"
+                   style="width:100%; height:44px; border:none; background:#111; border-radius:6px; cursor:pointer;">
+          </div>
+          <div style="min-width:160px; flex:1 1 160px;">
+            <label style="display:block; margin-bottom:6px; font-weight:600;">Gradient Color 2</label>
+            <input id="bg-grad2" type="color" value="#1e293b"
+                   style="width:100%; height:44px; border:none; background:#111; border-radius:6px; cursor:pointer;">
+          </div>
+          <div style="min-width:160px; flex:1 1 160px;">
+            <label style="display:block; margin-bottom:6px; font-weight:600;">Gradient Color 3</label>
+            <input id="bg-grad3" type="color" value="#0b1021"
+                   style="width:100%; height:44px; border:none; background:#111; border-radius:6px; cursor:pointer;">
+          </div>
+        </div>
+
+        <!-- Image upload -->
+        <div id="bg-image-section" style="display:none; margin-top:12px; min-width:260px; flex:1 1 260px;">
+          <label style="display:block; margin-bottom:6px; font-weight:600;">Choose image from device</label>
+          <input id="bg-image-input" type="file" accept="image/*"
+                 style="width:100%; padding:8px; border-radius:6px; border:1px solid #444; background:#111; color:#eee;">
+          <div style="font-size:0.85rem; color:#aaa; margin-top:6px;">
+            Image is stored only in your browser (not uploaded anywhere).
+          </div>
+        </div>
+
+        <!-- Preview -->
+        <div id="bg-preview" style="margin-top:12px; height:70px; width:100%; max-width:500px; border-radius:8px; border:1px solid #444; background:#0f172a;"></div>
+
+        <div style="margin-top:12px;">
+          <button id="save-bg-settings" style="padding:8px 14px; border-radius:6px; border:none; background:#22c55e; color:#fff; cursor:pointer;">
+            Save background
+          </button>
+          <span id="bg-saved-note" style="margin-left:10px; color:#86efac; display:none;">Saved!</span>
+        </div>
       </section>
 
       <!-- FIRST AID -->
@@ -355,10 +651,22 @@
         <p>Learn basic first aid skills, emergency steps, and safety tips.</p>
       </section>
 
-      <!-- DRUMS -->
-      <section id="drums">
-        <h2>🥁 Drums</h2>
-        <p>Drum lessons, rhythms, and practice tools.</p>
+      <!-- INSTRUMENTS -->
+      <section id="instruments">
+        <h2>🎸 Instruments</h2>
+
+        <div style="display:flex; gap:16px; min-height:420px;">
+
+          <!-- Left: instrument list -->
+          <div id="instruments-list" style="width:220px; border:1px solid #444; border-radius:8px; background:#0e1220; overflow:auto;">
+            <!-- Filled by JS -->
+          </div>
+
+          <!-- Right: content -->
+          <div id="instruments-content" style="flex:1; border:1px solid #444; border-radius:8px; background:#0e1220; padding:14px;">
+            <div style="color:#aaa;">Select an instrument to see lessons and tips.</div>
+          </div>
+        </div>
       </section>
 
       <!-- MUSIC -->
@@ -367,16 +675,40 @@
         <p>Music theory, instruments, and practice resources.</p>
       </section>
 
-      <!-- FITNESS -->
-      <section id="fitness">
-        <h2>💪 Fitness</h2>
-        <p>Workouts, routines, and health tips.</p>
+      <!-- SPORTS -->
+      <section id="sports">
+        <h2>🏅 Sports</h2>
+
+        <div style="display:flex; gap:16px; min-height:420px;">
+
+          <!-- Left: sports list -->
+          <div id="sports-list" style="width:220px; border:1px solid #444; border-radius:8px; background:#0e1220; overflow:auto;">
+            <!-- Filled by JS -->
+          </div>
+
+          <!-- Right: content -->
+          <div id="sports-content" style="flex:1; border:1px solid #444; border-radius:8px; background:#0e1220; padding:14px;">
+            <div style="color:#aaa;">Select a sport to see rules, how to play, and routines.</div>
+          </div>
+        </div>
       </section>
 
       <!-- STUDY -->
       <section id="study">
         <h2>📚 Study</h2>
-        <p>Study techniques, planners, and subject resources.</p>
+
+        <div style="display:flex; gap:16px; min-height:420px;">
+
+          <!-- Left: subject list -->
+          <div id="study-list" style="width:220px; border:1px solid #444; border-radius:8px; background:#0e1220; overflow:auto;">
+            <!-- Filled by JS -->
+          </div>
+
+          <!-- Right: content -->
+          <div id="study-content" style="flex:1; border:1px solid #444; border-radius:8px; background:#0e1220; padding:14px;">
+            <div style="color:#aaa;">Select a subject to see topics and lessons.</div>
+          </div>
+        </div>
       </section>
 
       <!-- ART -->
@@ -400,138 +732,203 @@
     </main>
   </div>
 
+  <!-- CHAT MODAL -->
+  <div id="chat-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:2000; align-items:center; justify-content:center; padding:16px;">
+    <div style="background:#1a1f2e; border:1px solid #333; border-radius:10px; padding:16px; width:100%; max-width:360px;">
+      <h3 id="chat-modal-title" style="margin-top:0;">New conversation</h3>
+      <div id="chat-modal-body" style="margin-bottom:12px;"></div>
+      <div style="display:flex; gap:8px; justify-content:flex-end;">
+        <button id="chat-modal-cancel" style="padding:8px 12px; border-radius:6px; border:1px solid #444; background:#111; color:#ddd; cursor:pointer;">Cancel</button>
+        <button id="chat-modal-ok" style="padding:8px 12px; border-radius:6px; border:none; background:#6366f1; color:#fff; cursor:pointer;">Create</button>
+      </div>
+    </div>
+  </div>
+
   <!-- JAVASCRIPT -->
   <script>
     // ====== AUTH LOGIC (SIMULATED) ======
-    const authOverlay = document.getElementById('auth-overlay');
-    const authMessage = document.getElementById('auth-message');
-    const usernameInput = document.getElementById('auth-username');
-    const passwordInput = document.getElementById('auth-password');
-    const btnLogin = document.getElementById('btn-login');
-    const btnSignup = document.getElementById('btn-signup');
-    const btnGuest = document.getElementById('btn-guest');
-
     let currentUser = null; // { username, isGuest }
 
-    function setLoggedIn(user) {
-      currentUser = user;
-      authOverlay?.classList.add('hidden');
+    function initAuth() {
+      const authOverlay = document.getElementById('auth-overlay');
+      const authMessage = document.getElementById('auth-message');
+      const usernameInput = document.getElementById('auth-username');
+      const passwordInput = document.getElementById('auth-password');
+      const btnLogin = document.getElementById('btn-login');
+      const btnSignup = document.getElementById('btn-signup');
+      const btnGuest = document.getElementById('btn-guest');
 
-      if (user.isGuest) {
-        limitFeaturesForGuest();
-      } else {
-        enableFullFeatures();
-      }
-    }
-
-    function limitFeaturesForGuest() {
-      // Example: disable posting and chat for guests
-      const postButtons = document.querySelectorAll('[data-action="create-post"], #create-post-btn');
-      postButtons.forEach(el => {
-        el.disabled = true;
-        el.style.opacity = 0.5;
-        el.style.pointerEvents = 'none';
-      });
-
-      const chatInputs = document.querySelectorAll('#chat-input, [data-action="send-message"]');
-      chatInputs.forEach(el => {
-        el.disabled = true;
-        el.style.opacity = 0.5;
-      });
-
-      const notice = document.createElement('div');
-      notice.textContent = 'You are in Guest mode: some features are limited.';
-      notice.style.cssText = 'position:fixed; bottom:10px; right:10px; background:#111; color:#fbbf24; border:1px solid #f59e0b; padding:8px 10px; border-radius:6px; font-size:0.85rem; z-index:999;';
-      document.body.appendChild(notice);
-    }
-
-    function enableFullFeatures() {
-      // Full features enabled (no restrictions)
-    }
-
-    btnLogin?.addEventListener('click', () => {
-      const username = (usernameInput.value || '').trim();
-      const password = (passwordInput.value || '').trim();
-
-      if (!username || !password) {
-        authMessage.textContent = 'Please enter username and password.';
+      if (!authOverlay) {
+        console.warn('auth-overlay not found');
         return;
       }
 
-      // TODO: call backend /auth/login here
-      setLoggedIn({ username, isGuest: false });
-      authMessage.textContent = '';
-    });
+      function setLoggedIn(user) {
+        currentUser = user;
+        console.log('User logged in:', user);
+        authOverlay.classList.add('hidden');
 
-    btnSignup?.addEventListener('click', () => {
-      const username = (usernameInput.value || '').trim();
-      const password = (passwordInput.value || '').trim();
-
-      if (!username || !password) {
-        authMessage.textContent = 'Please enter username and password.';
-        return;
+        if (user.isGuest) {
+          limitFeaturesForGuest();
+        } else {
+          enableFullFeatures();
+        }
       }
 
-      // TODO: call backend /auth/register here
-      setLoggedIn({ username, isGuest: false });
-      authMessage.textContent = '';
-    });
+      function limitFeaturesForGuest() {
+        const postButtons = document.querySelectorAll('[data-action="create-post"], #create-post-btn');
+        postButtons.forEach(el => {
+          el.disabled = true;
+          el.style.opacity = 0.5;
+          el.style.pointerEvents = 'none';
+        });
 
-    btnGuest?.addEventListener('click', () => {
-      setLoggedIn({ username: 'Guest', isGuest: true });
-    });
+        const chatInputs = document.querySelectorAll('#chat-input, [data-action="send-message"]');
+        chatInputs.forEach(el => {
+          el.disabled = true;
+          el.style.opacity = 0.5;
+        });
+
+        const notice = document.createElement('div');
+        notice.textContent = 'You are in Guest mode: some features are limited.';
+        notice.style.cssText = 'position:fixed; bottom:10px; right:10px; background:#111; color:#fbbf24; border:1px solid #f59e0b; padding:8px 10px; border-radius:6px; font-size:0.85rem; z-index:999;';
+        document.body.appendChild(notice);
+      }
+
+      function enableFullFeatures() {
+        // Full features enabled (no restrictions)
+      }
+
+      btnLogin?.addEventListener('click', () => {
+        const username = (usernameInput.value || '').trim();
+        const password = (passwordInput.value || '').trim();
+
+        if (!username || !password) {
+          authMessage.textContent = 'Please enter username and password.';
+          return;
+        }
+
+        // TODO: call backend /auth/login here
+        setLoggedIn({ username, isGuest: false });
+        authMessage.textContent = '';
+      });
+
+      btnSignup?.addEventListener('click', () => {
+        const username = (usernameInput.value || '').trim();
+        const password = (passwordInput.value || '').trim();
+
+        if (!username || !password) {
+          authMessage.textContent = 'Please enter username and password.';
+          return;
+        }
+
+        // TODO: call backend /auth/register here
+        setLoggedIn({ username, isGuest: false });
+        authMessage.textContent = '';
+      });
+
+      btnGuest?.addEventListener('click', () => {
+        console.log('Guest button clicked');
+        setLoggedIn({ username: 'Guest', isGuest: true });
+      });
+    }
 
     // ====== TAB SWITCHING ======
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const tab = btn.dataset.tab;
+    function initTabs() {
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tab = btn.dataset.tab;
 
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+          document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
 
-        document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
-        document.getElementById(tab)?.classList.add('active');
+          document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+          document.getElementById(tab)?.classList.add('active');
 
-        if (tab === 'chess') {
-          initChessTab();
-        }
+          if (tab === 'chess') {
+            initChessTab();
+          }
+        });
       });
-    });
+    }
 
-    // ====== CHESS LOGIC ======
+    // ====== CHESS LOGIC (CHESS.COM-STYLE + AI + CLOCKS + OPENING + COLORS) ======
+    let chessGame = null;
+    let chessBoard = null;
+    let moveHistory = [];
+    let aiEnabled = true;
+    let aiColor = 'b'; // AI plays black by default
+    let clockWhite = 600; // seconds
+    let clockBlack = 600;
+    let clockInterval = null;
+    let clocksRunning = false;
+
+    // Simple opening book (prefix-based)
+    const OPENING_BOOK = [
+      { moves: 'e4 e5 Nf3 Nc6 Bc4', name: 'Italian Game' },
+      { moves: 'e4 e5 Nf3 Nc6 Bb5', name: 'Ruy López' },
+      { moves: 'e4 c5', name: 'Sicilian Defense' },
+      { moves: 'd4 d5 c4', name: "Queen's Gambit" },
+      { moves: 'd4 Nf6 c4 g6 Nc3 Bg7', name: "King's Indian Defense" },
+      { moves: 'e4 e6 d4 d5', name: 'French Defense' },
+      { moves: 'e4 c6 d4 d5', name: 'Caro-Kann' },
+      { moves: 'd4 Nf6 c4 e6 Nc3 Bb4', name: 'Nimzo-Indian' },
+      { moves: 'c4', name: 'English Opening' },
+      { moves: 'e4 d5', name: 'Scandinavian Defense' }
+    ];
+
     function initChessTab() {
       const boardEl = document.getElementById('board');
       if (!boardEl) return;
 
-      // Avoid re-initializing if already created
       if (boardEl.dataset.chessInit === '1') return;
       boardEl.dataset.chessInit = '1';
 
-      const game = new Chess();
-      let board = null;
+      loadBoardColors();
 
-      function onDragStart(source, piece, position, orientation) {
-        if (game.game_over()) return false;
-        if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-            (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+      chessGame = new Chess();
+      moveHistory = [];
+      aiEnabled = true;
+      aiColor = 'b';
+      clockWhite = 600;
+      clockBlack = 600;
+      clocksRunning = false;
+
+      function onDragStart(source, piece) {
+        if (chessGame.game_over()) return false;
+
+        // If AI is on and it's AI's turn, block human moves
+        if (aiEnabled && chessGame.turn() === aiColor) return false;
+
+        if ((chessGame.turn() === 'w' && piece.search(/^b/) !== -1) ||
+            (chessGame.turn() === 'b' && piece.search(/^w/) !== -1)) {
           return false;
         }
       }
 
       function onDrop(source, target) {
-        const move = game.move({
+        const move = chessGame.move({
           from: source,
           to: target,
           promotion: 'q'
         });
 
         if (move === null) return 'snapback';
+
+        moveHistory.push(move);
+        updateMoveList();
         updateStatus();
-        // Here you can send move to backend for online play later
+        updateOpeningName();
+
+        if (!clocksRunning) startClocks();
+
+        if (aiEnabled && !chessGame.game_over() && chessGame.turn() === aiColor) {
+          setTimeout(makeAiMove, 250);
+        }
       }
 
       function onSnapEnd() {
-        board.position(game.fen());
+        chessBoard.position(chessGame.fen());
       }
 
       function updateStatus() {
@@ -539,36 +936,226 @@
         const turnEl = document.getElementById('turn-indicator');
         if (!statusEl || !turnEl) return;
 
-        let status = '';
-        let moveColor = (game.turn() === 'w') ? 'White' : 'Black';
+        let status = 'Playing';
+        let moveColor = (chessGame.turn() === 'w') ? 'White' : 'Black';
 
-        if (game.in_checkmate()) {
-          status = 'Game over, ' + moveColor + ' is in checkmate.';
-        } else if (game.in_draw()) {
-          status = 'Game over, drawn.';
-        } else {
-          status = 'Game in progress.';
-          if (game.in_check()) {
-            status += ' ' + moveColor + ' is in check.';
-          }
+        if (chessGame.in_checkmate()) {
+          status = 'Checkmate';
+        } else if (chessGame.in_draw()) {
+          status = 'Draw';
+        } else if (chessGame.in_check()) {
+          status = 'Check';
         }
 
         statusEl.textContent = status;
         turnEl.textContent = moveColor;
       }
 
+      function updateMoveList() {
+        const moveListEl = document.getElementById('move-list');
+        if (!moveListEl) return;
+
+        const history = chessGame.history();
+        const pairs = [];
+
+        for (let i = 0; i < history.length; i += 2) {
+          const num = (i / 2) + 1;
+          const whiteMove = history[i] || '';
+          const blackMove = history[i + 1] || '';
+          pairs.push(`${num}. ${whiteMove} ${blackMove}`);
+        }
+
+        moveListEl.innerHTML = pairs.join('<br>') || '<span style="color:#888;">No moves yet.</span>';
+        moveListEl.scrollTop = moveListEl.scrollHeight;
+      }
+
+      function updateOpeningName() {
+        const el = document.getElementById('opening-name');
+        if (!el) return;
+
+        const history = chessGame.history();
+        const posStr = history.join(' ');
+
+        let bestMatch = '-';
+        for (const o of OPENING_BOOK) {
+          const movesStr = o.moves;
+          if (posStr.startsWith(movesStr)) {
+            bestMatch = o.name;
+          }
+        }
+
+        el.textContent = bestMatch;
+      }
+
+      // Clocks
+      function formatTime(seconds) {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${m}:${s.toString().padStart(2, '0')}`;
+      }
+
+      function updateClockDisplay() {
+        const wEl = document.getElementById('clock-white');
+        const bEl = document.getElementById('clock-black');
+        if (wEl) wEl.textContent = formatTime(clockWhite);
+        if (bEl) bEl.textContent = formatTime(clockBlack);
+      }
+
+      function startClocks() {
+        if (clocksRunning) return;
+        clocksRunning = true;
+        updateClockDisplay();
+
+        clockInterval = setInterval(() => {
+          if (chessGame.game_over()) {
+            stopClocks();
+            return;
+          }
+
+          if (chessGame.turn() === 'w') {
+            clockWhite = Math.max(0, clockWhite - 1);
+          } else {
+            clockBlack = Math.max(0, clockBlack - 1);
+          }
+
+          updateClockDisplay();
+
+          if (clockWhite === 0 || clockBlack === 0) {
+            stopClocks();
+            const statusEl = document.getElementById('game-status');
+            if (statusEl) {
+              statusEl.textContent = clockWhite === 0 ? 'White ran out of time' : 'Black ran out of time';
+            }
+          }
+        }, 1000);
+      }
+
+      function stopClocks() {
+        if (!clocksRunning) return;
+        clearInterval(clockInterval);
+        clocksRunning = false;
+      }
+
+      function resetClocks() {
+        stopClocks();
+        clockWhite = 600;
+        clockBlack = 600;
+        updateClockDisplay();
+      }
+
+      // AI: random legal move
+      function makeAiMove() {
+        if (chessGame.game_over()) return;
+
+        const moves = chessGame.moves();
+        if (moves.length === 0) return;
+
+        const randomMove = moves[Math.floor(Math.random() * moves.length)];
+        chessGame.move(randomMove);
+        moveHistory.push({ from: '', to: '', piece: '', flags: '', san: randomMove });
+        updateMoveList();
+        updateStatus();
+        updateOpeningName();
+        chessBoard.position(chessGame.fen());
+      }
+
       const config = {
         draggable: true,
         position: 'start',
-        onDragStart,
-        onDrop,
-        onSnapEnd,
+        onDragStart: onDragStart,
+        onDrop: onDrop,
+        onSnapEnd: onSnapEnd,
         pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
       };
 
-      board = Chessboard('board', config);
+      chessBoard = Chessboard('board', config);
       updateStatus();
+      updateClockDisplay();
       loadOpenings();
+
+      // Buttons
+      document.getElementById('new-game-btn')?.addEventListener('click', () => {
+        chessGame.reset();
+        moveHistory = [];
+        chessBoard.start();
+        updateMoveList();
+        updateStatus();
+        updateOpeningName();
+        resetClocks();
+      });
+
+      document.getElementById('flip-board-btn')?.addEventListener('click', () => {
+        chessBoard.flip();
+      });
+
+      document.getElementById('copy-fen-btn')?.addEventListener('click', () => {
+        const fen = chessGame.fen();
+        navigator.clipboard?.writeText(fen).then(() => {
+          alert('FEN copied to clipboard:\n' + fen);
+        }).catch(() => {
+          prompt('Copy this FEN:', fen);
+        });
+      });
+
+      const toggleAiBtn = document.getElementById('toggle-ai-btn');
+      toggleAiBtn?.addEventListener('click', () => {
+        aiEnabled = !aiEnabled;
+        toggleAiBtn.textContent = aiEnabled ? 'AI: On' : 'AI: Off';
+      });
+
+      // Board color settings
+      const boardLightColor = document.getElementById('board-light-color');
+      const boardDarkColor = document.getElementById('board-dark-color');
+      const pieceStyle = document.getElementById('piece-style');
+      const saveBoardColorsBtn = document.getElementById('save-board-colors');
+      const boardColorsSaved = document.getElementById('board-colors-saved');
+
+      function loadBoardColors() {
+        const savedLight = localStorage.getItem('chess_board_light') || '#f0d9b5';
+        const savedDark = localStorage.getItem('chess_board_dark') || '#b58863';
+        const savedStyle = localStorage.getItem('chess_piece_style') || 'wikipedia';
+
+        if (boardLightColor) boardLightColor.value = savedLight;
+        if (boardDarkColor) boardDarkColor.value = savedDark;
+        if (pieceStyle) pieceStyle.value = savedStyle;
+
+        applyBoardColors(savedLight, savedDark, savedStyle);
+      }
+
+      function applyBoardColors(light, dark, style) {
+        if (!chessBoard) return;
+
+        const theme = {
+          pieceTheme: `https://chessboardjs.com/img/chesspieces/${style}/{piece}.png`
+        };
+
+        chessBoard.set({
+          ...theme,
+          colors: {
+            light: light,
+            dark: dark
+          }
+        });
+      }
+
+      function saveBoardColors() {
+        const light = boardLightColor?.value || '#f0d9b5';
+        const dark = boardDarkColor?.value || '#b58863';
+        const style = pieceStyle?.value || 'wikipedia';
+
+        localStorage.setItem('chess_board_light', light);
+        localStorage.setItem('chess_board_dark', dark);
+        localStorage.setItem('chess_piece_style', style);
+
+        applyBoardColors(light, dark, style);
+
+        boardColorsSaved.style.display = 'inline';
+        setTimeout(() => {
+          boardColorsSaved.style.display = 'none';
+        }, 1500);
+      }
+
+      saveBoardColorsBtn?.addEventListener('click', saveBoardColors);
     }
 
     function loadOpenings() {
@@ -599,55 +1186,1489 @@
     }
 
     // ====== CYCLONE AI LOGIC ======
-    const aiChat = document.getElementById('ai-chat');
-    const aiInput = document.getElementById('ai-input');
-    const aiSend = document.getElementById('ai-send');
+    function getCasualGreeting() {
+      const hour = new Date().getHours();
+      let timeGreeting;
 
-    function addAiMessage(text, isUser = false) {
-      if (!aiChat) return;
-      const line = document.createElement('div');
-      line.style.marginBottom = '6px';
-      line.innerHTML = isUser
-        ? `<strong>You:</strong> ${text}`
-        : `<strong>Cyclone AI:</strong> ${text}`;
-      aiChat.appendChild(line);
-      aiChat.scrollTop = aiChat.scrollHeight;
+      if (hour >= 5 && hour < 12) {
+        timeGreeting = "good morning";
+      } else if (hour >= 12 && hour < 17) {
+        timeGreeting = "good afternoon";
+      } else if (hour >= 17 && hour < 22) {
+        timeGreeting = "good evening";
+      } else {
+        timeGreeting = "hey";
+      }
+
+      const starters = [
+        `Yo, ${timeGreeting}!`,
+        `Hey, ${timeGreeting}!`,
+        `What's up? ${timeGreeting}!`,
+        `Sup! ${timeGreeting}!`,
+        `Hi! ${timeGreeting}!`
+      ];
+
+      return starters[Math.floor(Math.random() * starters.length)];
     }
 
     function cycloneAIReply(userText) {
       const t = userText.toLowerCase();
-      if (t.includes('open') && t.includes('best')) {
-        return "For beginners, the Italian Game (1.e4 e5 2.Nf3 Nc6 3.Bc4) is a great opening to learn.";
+      const greeting = getCasualGreeting();
+
+      // Chess-specific answers
+      if (t.includes('open') && (t.includes('best') || t.includes('good'))) {
+        return `${greeting} For beginners, the Italian Game (1.e4 e5 2.Nf3 Nc6 3.Bc4) is a great opening to learn.`;
       }
+
       if (t.includes('chess') && t.includes('improve')) {
-        return "To improve at chess: 1) play regularly, 2) review your games, 3) study basic endgames, 4) learn common tactics.";
+        return `${greeting} To improve at chess: 1) play regularly, 2) review your games, 3) study basic endgames, 4) learn common tactics.`;
       }
+
       if (t.includes('defen') || t.includes('defense')) {
-        return "Solid defenses include the Sicilian, French, and Caro-Kann against 1.e4; and the King’s Indian or Nimzo-Indian against 1.d4.";
+        return `${greeting} Solid defenses include the Sicilian, French, and Caro-Kann against 1.e4; and the King's Indian or Nimzo-Indian against 1.d4.`;
       }
-      return "Got it. I can help with openings, tactics, and general strategy. Try asking: “What’s a good opening for beginners?”";
+
+      if (t.includes('time')) {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return `${greeting} It's ${timeStr} for you right now.`;
+      }
+
+      // Generic friendly responses
+      const generic = [
+        `${greeting} I'm here. What do you want to work on—chess, study, or something else?`,
+        `${greeting} What's on your mind? I can help with chess, strategy, or just chat.`,
+        `${greeting} Yo! Ask me about openings, tactics, or anything else you're thinking about.`,
+        `${greeting} Hey! I'm listening. Want chess tips or just wanna talk?`
+      ];
+
+      return generic[Math.floor(Math.random() * generic.length)];
     }
 
-    function handleAiSend() {
-      const text = (aiInput?.value || '').trim();
-      if (!text) return;
-      addAiMessage(text, true);
-      aiInput.value = '';
+    function initAiChat() {
+      const aiChat = document.getElementById('ai-chat');
+      const aiInput = document.getElementById('ai-input');
+      const aiSend = document.getElementById('ai-send');
+      if (!aiChat || !aiSend) return;
 
-      setTimeout(() => {
-        const reply = cycloneAIReply(text);
-        addAiMessage(reply, false);
-      }, 400);
+      function addAiMessage(text, isUser = false) {
+        const style = localStorage.getItem('cyclone_msg_style') || 'normal';
+        const color = localStorage.getItem('cyclone_msg_color') || '#6366f1';
+
+        const line = document.createElement('div');
+        line.style.marginBottom = '6px';
+
+        const bubble = document.createElement('span');
+        bubble.className = 'msg-bubble style-' + style;
+        bubble.style.background = isUser ? color : '#334155';
+        bubble.textContent = text;
+
+        const prefix = document.createElement('strong');
+        prefix.textContent = isUser ? 'You: ' : 'Cyclone AI: ';
+        prefix.style.color = '#ddd';
+
+        line.appendChild(prefix);
+        line.appendChild(bubble);
+
+        aiChat.appendChild(line);
+        aiChat.scrollTop = aiChat.scrollHeight;
+      }
+
+      function handleAiSend() {
+        const text = (aiInput?.value || '').trim();
+        if (!text) return;
+        addAiMessage(text, true);
+        aiInput.value = '';
+
+        setTimeout(() => {
+          const reply = cycloneAIReply(text);
+          addAiMessage(reply, false);
+        }, 400);
+      }
+
+      aiSend.addEventListener('click', handleAiSend);
+      aiInput?.addEventListener('keydown', e => {
+        if (e.key === 'Enter') handleAiSend();
+      });
     }
 
-    aiSend?.addEventListener('click', handleAiSend);
-    aiInput?.addEventListener('keydown', e => {
-      if (e.key === 'Enter') handleAiSend();
-    });
+    // ====== MESSAGE STYLE SETTINGS ======
+    function initMessageStyle() {
+      const msgColorInput = document.getElementById('msg-color');
+      const msgStyleSelect = document.getElementById('msg-style');
+      const msgPreview = document.getElementById('msg-preview');
+      const saveMsgStyleBtn = document.getElementById('save-msg-style');
+      const msgSavedNote = document.getElementById('msg-saved-note');
+      if (!msgColorInput || !msgStyleSelect || !msgPreview) return;
+
+      function applyMessageStyle(color, style) {
+        document.documentElement.style.setProperty('--user-msg-color', color);
+
+        const bubble = msgPreview.querySelector('.msg-bubble');
+        if (bubble) {
+          bubble.style.background = color;
+          bubble.classList.remove('style-normal', 'style-bold', 'style-italic', 'style-bold-italic');
+          bubble.classList.add('style-' + style);
+        }
+      }
+
+      function loadSavedMessageStyle() {
+        const savedColor = localStorage.getItem('cyclone_msg_color') || '#6366f1';
+        const savedStyle = localStorage.getItem('cyclone_msg_style') || 'normal';
+
+        if (msgColorInput) msgColorInput.value = savedColor;
+        if (msgStyleSelect) msgStyleSelect.value = savedStyle;
+
+        applyMessageStyle(savedColor, savedStyle);
+      }
+
+      function saveMessageStyle() {
+        const color = msgColorInput.value || '#6366f1';
+        const style = msgStyleSelect.value || 'normal';
+
+        localStorage.setItem('cyclone_msg_color', color);
+        localStorage.setItem('cyclone_msg_style', style);
+
+        applyMessageStyle(color, style);
+
+        msgSavedNote.style.display = 'inline';
+        setTimeout(() => {
+          msgSavedNote.style.display = 'none';
+        }, 1500);
+      }
+
+      saveMsgStyleBtn?.addEventListener('click', saveMessageStyle);
+
+      msgColorInput.addEventListener('input', () => {
+        const color = msgColorInput.value;
+        const style = msgStyleSelect.value || 'normal';
+        applyMessageStyle(color, style);
+      });
+
+      msgStyleSelect.addEventListener('change', () => {
+        const color = msgColorInput?.value || '#6366f1';
+        const style = msgStyleSelect.value;
+        applyMessageStyle(color, style);
+      });
+
+      loadSavedMessageStyle();
+    }
+
+    // ====== BACKGROUND SETTINGS (COLOR / GRADIENT / IMAGE) ======
+    function initBackgroundSettings() {
+      const bgType = document.getElementById('bg-type');
+      const bgColorSection = document.getElementById('bg-color-section');
+      const bgGradientSection = document.getElementById('bg-gradient-section');
+      const bgImageSection = document.getElementById('bg-image-section');
+
+      const bgColor = document.getElementById('bg-color');
+      const bgGrad1 = document.getElementById('bg-grad1');
+      const bgGrad2 = document.getElementById('bg-grad2');
+      const bgGrad3 = document.getElementById('bg-grad3');
+      const bgImageInput = document.getElementById('bg-image-input');
+
+      const bgPreview = document.getElementById('bg-preview');
+      const saveBgSettingsBtn = document.getElementById('save-bg-settings');
+      const bgSavedNote = document.getElementById('bg-saved-note');
+
+      if (!bgType || !bgPreview) return;
+
+      function updateSections() {
+        const type = bgType.value;
+        bgColorSection.style.display = (type === 'color') ? 'block' : 'none';
+        bgGradientSection.style.display = (type === 'gradient') ? 'flex' : 'none';
+        bgImageSection.style.display = (type === 'image') ? 'block' : 'none';
+      }
+
+      function applyBackground() {
+        const type = bgType.value;
+
+        document.documentElement.style.setProperty('--bg-type', type);
+        document.body.classList.remove('bg-type-gradient', 'bg-type-image');
+
+        if (type === 'color') {
+          const c = bgColor?.value || '#0f172a';
+          document.documentElement.style.setProperty('--bg-solid', c);
+          document.body.style.backgroundColor = c;
+          document.body.style.backgroundImage = 'none';
+
+          bgPreview.style.background = c;
+        } else if (type === 'gradient') {
+          const c1 = bgGrad1?.value || '#0f172a';
+          const c2 = bgGrad2?.value || '#1e293b';
+          const c3 = bgGrad3?.value || '#0b1021';
+
+          document.documentElement.style.setProperty('--bg-grad1', c1);
+          document.documentElement.style.setProperty('--bg-grad2', c2);
+          document.documentElement.style.setProperty('--bg-grad3', c3);
+
+          document.body.classList.add('bg-type-gradient');
+          document.body.style.backgroundColor = '';
+          document.body.style.backgroundImage = ''; // controlled by CSS class
+
+          bgPreview.style.background = `linear-gradient(135deg, ${c1}, ${c2}, ${c3})`;
+        } else if (type === 'image') {
+          const dataUrl = localStorage.getItem('cyclone_bg_image') || '';
+          if (dataUrl) {
+            document.documentElement.style.setProperty('--bg-image', `url("${dataUrl}")`);
+            document.body.classList.add('bg-type-image');
+            document.body.style.backgroundColor = '#000';
+            document.body.style.backgroundImage = ''; // controlled by CSS
+
+            bgPreview.style.background = `url("${dataUrl}") center/cover no-repeat`;
+          } else {
+            bgPreview.style.background = '#222';
+          }
+        }
+      }
+
+      function loadSavedBackground() {
+        const savedType = localStorage.getItem('cyclone_bg_type') || 'color';
+        bgType.value = savedType;
+
+        if (savedType === 'color') {
+          const c = localStorage.getItem('cyclone_bg_color') || '#0f172a';
+          if (bgColor) bgColor.value = c;
+        } else if (savedType === 'gradient') {
+          if (bgGrad1) bgGrad1.value = localStorage.getItem('cyclone_bg_grad1') || '#0f172a';
+          if (bgGrad2) bgGrad2.value = localStorage.getItem('cyclone_bg_grad2') || '#1e293b';
+          if (bgGrad3) bgGrad3.value = localStorage.getItem('cyclone_bg_grad3') || '#0b1021';
+        }
+
+        updateSections();
+        applyBackground();
+      }
+
+      function saveBackground() {
+        const type = bgType.value;
+        localStorage.setItem('cyclone_bg_type', type);
+
+        if (type === 'color') {
+          const c = bgColor?.value || '#0f172a';
+          localStorage.setItem('cyclone_bg_color', c);
+        } else if (type === 'gradient') {
+          const c1 = bgGrad1?.value || '#0f172a';
+          const c2 = bgGrad2?.value || '#1e293b';
+          const c3 = bgGrad3?.value || '#0b1021';
+          localStorage.setItem('cyclone_bg_grad1', c1);
+          localStorage.setItem('cyclone_bg_grad2', c2);
+          localStorage.setItem('cyclone_bg_grad3', c3);
+        }
+        // image is saved separately when file is chosen
+
+        applyBackground();
+
+        bgSavedNote.style.display = 'inline';
+        setTimeout(() => {
+          bgSavedNote.style.display = 'none';
+        }, 1500);
+      }
+
+      // Image upload: convert to data URL and store in localStorage
+      bgImageInput?.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          const dataUrl = reader.result;
+          try {
+            localStorage.setItem('cyclone_bg_image', dataUrl);
+            localStorage.setItem('cyclone_bg_type', 'image');
+            bgType.value = 'image';
+            updateSections();
+            applyBackground();
+          } catch {
+            alert('Image is too large to store in browser storage. Please choose a smaller image.');
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+
+      saveBgSettingsBtn?.addEventListener('click', saveBackground);
+
+      bgType?.addEventListener('change', () => {
+        updateSections();
+        applyBackground();
+      });
+
+      bgColor?.addEventListener('input', applyBackground);
+      bgGrad1?.addEventListener('input', applyBackground);
+      bgGrad2?.addEventListener('input', applyBackground);
+      bgGrad3?.addEventListener('input', applyBackground);
+
+      updateSections();
+      loadSavedBackground();
+    }
+
+    // ====== CHAT: DMs + GROUPS (LOCALSTORAGE) ======
+    function initChat() {
+      const conversationsPanel = document.getElementById('conversations-panel');
+      const chatPanel = document.getElementById('chat-panel');
+      const chatMessagesEl = document.getElementById('chat-messages');
+      const chatInputEl = document.getElementById('chat-input');
+      const chatSendBtn = document.getElementById('chat-send');
+
+      const newDmBtn = document.getElementById('new-dm-btn');
+      const newGroupBtn = document.getElementById('new-group-btn');
+
+      const chatModalEl = document.getElementById('chat-modal');
+      const chatModalTitleEl = document.getElementById('chat-modal-title');
+      const chatModalBodyEl = document.getElementById('chat-modal-body');
+      const chatModalCancelEl = document.getElementById('chat-modal-cancel');
+      const chatModalOkEl = document.getElementById('chat-modal-ok');
+
+      if (!conversationsPanel || !chatMessagesEl) return;
+
+      let conversations = [];
+      let currentConvoId = null;
+      const STORAGE_KEY = 'cyclone_conversations';
+
+      function loadConversations() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        conversations = raw ? JSON.parse(raw) : [];
+      }
+
+      function saveConversations() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations));
+      }
+
+      function renderConversations() {
+        if (conversations.length === 0) {
+          conversationsPanel.innerHTML = '<div style="padding:10px; color:#aaa;">No conversations yet.</div>';
+          return;
+        }
+
+        conversationsPanel.innerHTML = conversations.map(c => `
+          <div class="convo-item ${c.id === currentConvoId ? 'active' : ''}" data-id="${c.id}">
+            <div style="font-weight:600;">${c.type === 'dm' ? '👤 ' : '👥 '}${c.name}</div>
+            <div style="font-size:0.8rem; color:#888;">${c.type === 'dm' ? 'Direct message' : 'Group chat'}</div>
+          </div>
+        `).join('');
+
+        conversationsPanel.querySelectorAll('.convo-item').forEach(el => {
+          el.addEventListener('click', () => {
+            currentConvoId = el.dataset.id;
+            renderConversations();
+            renderMessages();
+          });
+        });
+      }
+
+      function renderMessages() {
+        chatMessagesEl.innerHTML = '';
+
+        const convo = conversations.find(c => c.id === currentConvoId);
+        if (!convo) {
+          chatMessagesEl.innerHTML = '<div style="padding:10px; color:#aaa;">Select or create a conversation.</div>';
+          return;
+        }
+
+        const userColor = localStorage.getItem('cyclone_msg_color') || '#6366f1';
+        const userStyle = localStorage.getItem('cyclone_msg_style') || 'normal';
+
+        convo.messages.forEach(m => {
+          const isSelf = m.sender === (currentUser?.username || 'Guest');
+
+          const line = document.createElement('div');
+          line.className = 'chat-line ' + (isSelf ? 'self' : 'other');
+
+          const sender = document.createElement('div');
+          sender.className = 'chat-sender';
+          sender.textContent = m.sender;
+
+          const bubble = document.createElement('span');
+          bubble.className = 'msg-bubble style-' + userStyle;
+          bubble.style.background = isSelf ? userColor : '#334155';
+          bubble.textContent = m.text;
+
+          line.appendChild(sender);
+          line.appendChild(bubble);
+          chatMessagesEl.appendChild(line);
+        });
+
+        chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+      }
+
+      function sendMessage() {
+        const text = (chatInputEl?.value || '').trim();
+        if (!text || !currentConvoId) return;
+
+        const convo = conversations.find(c => c.id === currentConvoId);
+        if (!convo) return;
+
+        const msg = {
+          id: Date.now().toString(),
+          sender: currentUser?.username || 'Guest',
+          text,
+          time: Date.now()
+        };
+
+        convo.messages.push(msg);
+        saveConversations();
+        renderMessages();
+        chatInputEl.value = '';
+      }
+
+      chatSendBtn?.addEventListener('click', sendMessage);
+      chatInputEl?.addEventListener('keydown', e => {
+        if (e.key === 'Enter') sendMessage();
+      });
+
+      newDmBtn?.addEventListener('click', () => {
+        openModal('New Direct Message', `
+          <label style="display:block; margin-bottom:6px; font-weight:600;">Username</label>
+          <input id="dm-username" type="text" placeholder="Enter username" style="width:100%; padding:8px; border-radius:6px; border:1px solid #444; background:#111; color:#eee;">
+        `);
+        chatModalOkEl.onclick = () => {
+          const username = (document.getElementById('dm-username')?.value || '').trim();
+          if (!username) return;
+          const id = 'dm-' + Date.now();
+          conversations.push({
+            id,
+            type: 'dm',
+            name: username,
+            participants: [(currentUser?.username || 'Guest'), username],
+            messages: []
+          });
+          saveConversations();
+          currentConvoId = id;
+          renderConversations();
+          renderMessages();
+          closeModal();
+        };
+      });
+
+      newGroupBtn?.addEventListener('click', () => {
+        openModal('New Group Chat', `
+          <label style="display:block; margin-bottom:6px; font-weight:600;">Group name</label>
+          <input id="group-name" type="text" placeholder="Group name" style="width:100%; padding:8px; border-radius:6px; border:1px solid #444; background:#111; color:#eee; margin-bottom:8px;">
+          <label style="display:block; margin-bottom:6px; font-weight:600;">Participants (comma separated)</label>
+          <input id="group-participants" type="text" placeholder="alice, bob, charlie" style="width:100%; padding:8px; border-radius:6px; border:1px solid #444; background:#111; color:#eee;">
+        `);
+        chatModalOkEl.onclick = () => {
+          const name = (document.getElementById('group-name')?.value || '').trim() || 'Group';
+          const partsRaw = (document.getElementById('group-participants')?.value || '').trim();
+          const participants = partsRaw
+            ? partsRaw.split(',').map(s => s.trim()).filter(Boolean)
+            : [];
+          const id = 'group-' + Date.now();
+          conversations.push({
+            id,
+            type: 'group',
+            name,
+            participants: [(currentUser?.username || 'Guest'), ...participants],
+            messages: []
+          });
+          saveConversations();
+          currentConvoId = id;
+          renderConversations();
+          renderMessages();
+          closeModal();
+        };
+      });
+
+      function openModal(title, html) {
+        chatModalTitleEl.textContent = title;
+        chatModalBodyEl.innerHTML = html;
+        chatModalEl.style.display = 'flex';
+      }
+
+      function closeModal() {
+        chatModalEl.style.display = 'none';
+      }
+
+      chatModalCancelEl?.addEventListener('click', closeModal);
+
+      loadConversations();
+      renderConversations();
+      renderMessages();
+    }
+
+    // ====== INSTRUMENTS TAB ======
+    function initInstruments() {
+      const listEl = document.getElementById('instruments-list');
+      const contentEl = document.getElementById('instruments-content');
+      if (!listEl || !contentEl) return;
+
+      const instruments = [
+        {
+          id: 'guitar',
+          name: '🎸 Guitar',
+          content: `
+            <h3 style="margin-top:0;">Guitar</h3>
+            <p>Learn chords, strumming patterns, and basic songs.</p>
+
+            <h4>Basic open chords</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Major: C, D, E, F, G, A, B</li>
+              <li>Minor: Cm, Dm, Em, Fm, Gm, Am, Bm</li>
+            </ul>
+
+            <h4>Beginner practice plan</h4>
+            <ol style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Learn C, G, D, Em, Am.</li>
+              <li>Practice switching between C–G–D–Em–Am smoothly.</li>
+              <li>Learn a simple song using these chords.</li>
+              <li>Add strumming patterns: down–down–up–up–down.</li>
+            </ol>
+
+            <h4>Next steps</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Barre chords (F, Bm, etc.).</li>
+              <li>Basic scales (E minor pentatonic).</li>
+              <li>Fingerpicking patterns.</li>
+            </ul>
+          `
+        },
+        {
+          id: 'piano',
+          name: '🎹 Piano',
+          content: `
+            <h3 style="margin-top:0;">Piano</h3>
+            <p>Learn notes, chords, and simple melodies.</p>
+
+            <h4>Basic concepts</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>White keys: C D E F G A B (then repeats).</li>
+              <li>Black keys: sharps/flats (C#, Db, etc.).</li>
+              <li>Right hand: higher notes, melody.</li>
+              <li>Left hand: lower notes, bass/chords.</li>
+            </ul>
+
+            <h4>Beginner practice plan</h4>
+            <ol style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Learn C major scale with right hand.</li>
+              <li>Learn C, F, G major chords.</li>
+              <li>Play a simple melody with right hand, chords with left.</li>
+              <li>Practice hands separately, then together slowly.</li>
+            </ol>
+
+            <h4>Next steps</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>More scales (G, F, A minor).</li>
+              <li>Chord progressions (C–G–Am–F, etc.).</li>
+              <li>Simple songs and arpeggios.</li>
+            </ul>
+          `
+        },
+        {
+          id: 'drums',
+          name: '🥁 Drums',
+          content: `
+            <h3 style="margin-top:0;">Drums</h3>
+            <p>Learn basic beats, coordination, and rhythm.</p>
+
+            <h4>Basic parts</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Snare, kick (bass drum), hi-hat, toms, cymbals.</li>
+              <li>Right hand: hi-hat/ride, left hand: snare, feet: kick & hi-hat pedal.</li>
+            </ul>
+
+            <h4>First beat (rock beat)</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Hi-hat: 8th notes (1 & 2 & 3 & 4 &).</li>
+              <li>Kick: on 1 and 3.</li>
+              <li>Snare: on 2 and 4.</li>
+            </ul>
+
+            <h4>Beginner practice plan</h4>
+            <ol style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Practice hi-hat 8th notes with foot closed.</li>
+              <li>Add kick on 1 and 3.</li>
+              <li>Add snare on 2 and 4.</li>
+              <li>Play slowly with a metronome, then increase tempo.</li>
+            </ol>
+
+            <h4>Next steps</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Fills using toms and snare.</li>
+              <li>Different hi-hat patterns (open/closed).</li>
+              <li>Basic grooves: rock, pop, funk, shuffle.</li>
+            </ul>
+          `
+        },
+        {
+          id: 'violin',
+          name: '🎻 Violin',
+          content: `
+            <h3 style="margin-top:0;">Violin</h3>
+            <p>Learn posture, bowing, and first positions.</p>
+
+            <h4>Basics</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Hold violin between chin and shoulder, relaxed.</li>
+              <li>Bow straight across the string, not slanted.</li>
+              <li>Open strings: G, D, A, E (low to high).</li>
+            </ul>
+
+            <h4>Beginner practice plan</h4>
+            <ol style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Practice open strings with long, steady bows.</li>
+              <li>Work on posture and relaxed grip.</li>
+              <li>Learn first position finger placements on A string.</li>
+              <li>Play simple tunes using open strings and a few fingers.</li>
+            </ol>
+
+            <h4>Next steps</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Scales in first position (A major, G major).</li>
+              <li>Shifting between strings smoothly.</li>
+              <li>Basic vibrato and dynamics.</li>
+            </ul>
+          `
+        },
+        {
+          id: 'flute',
+          name: '🎶 Flute',
+          content: `
+            <h3 style="margin-top:0;">Flute</h3>
+            <p>Learn embouchure, breathing, and basic notes.</p>
+
+            <h4>Basics</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Embouchure: lips form a small, focused opening.</li>
+              <li>Blow across the hole, not directly into it.</li>
+              <li>Use steady, supported air from the diaphragm.</li>
+            </ul>
+
+            <h4>Beginner practice plan</h4>
+            <ol style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Practice making a steady tone on middle register notes.</li>
+              <li>Learn B, A, G with simple fingerings.</li>
+              <li>Play long tones to improve sound quality.</li>
+              <li>Practice simple melodies using these notes.</li>
+            </ol>
+
+            <h4>Next steps</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Extend range up and down.</li>
+              <li>Learn scales (C, G, F major).</li>
+              <li>Work on articulation (tonguing) and dynamics.</li>
+            </ul>
+          `
+        },
+        {
+          id: 'bass',
+          name: '🎸 Bass Guitar',
+          content: `
+            <h3 style="margin-top:0;">Bass Guitar</h3>
+            <p>Learn groove, rhythm, and bass lines.</p>
+
+            <h4>Basics</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>4 strings: E, A, D, G (low to high).</li>
+              <li>Focus on locking in with the kick drum.</li>
+              <li>Use fingers (index & middle) or pick.</li>
+            </ul>
+
+            <h4>Beginner practice plan</h4>
+            <ol style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Learn major scale patterns in one position.</li>
+              <li>Practice root–fifth patterns (e.g. C–G, A–E).</li>
+              <li>Play along with simple songs, focusing on timing.</li>
+              <li>Work on consistent dynamics and note length.</li>
+            </ol>
+
+            <h4>Next steps</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Learn common grooves (rock, funk, reggae).</li>
+              <li>Explore octaves, slides, and hammer-ons.</li>
+              <li>Study bass lines from songs you like.</li>
+            </ul>
+          `
+        }
+      ];
+
+      let currentInstrument = null;
+
+      function renderList() {
+        listEl.innerHTML = instruments.map(inst => `
+          <div class="convo-item ${currentInstrument === inst.id ? 'active' : ''}" data-id="${inst.id}">
+            <div style="font-weight:600;">${inst.name}</div>
+          </div>
+        `).join('');
+
+        listEl.querySelectorAll('.convo-item').forEach(el => {
+          el.addEventListener('click', () => {
+            currentInstrument = el.dataset.id;
+            renderList();
+            renderContent();
+          });
+        });
+      }
+
+      function renderContent() {
+        const inst = instruments.find(i => i.id === currentInstrument);
+        if (!inst) {
+          contentEl.innerHTML = '<div style="color:#aaa;">Select an instrument.</div>';
+          return;
+        }
+        contentEl.innerHTML = inst.content;
+      }
+
+      renderList();
+    }
+
+    // ====== STUDY TAB (MATHS, ENGLISH, LANGUAGES, ETC.) ======
+    function initStudy() {
+      const listEl = document.getElementById('study-list');
+      const contentEl = document.getElementById('study-content');
+      if (!listEl || !contentEl) return;
+
+      const subjects = [
+        {
+          id: 'maths',
+          name: '🧮 Maths',
+          content: `
+            <h3 style="margin-top:0;">Maths</h3>
+            <p>Build strong foundations in numbers, algebra, geometry, and more.</p>
+
+            <h4>Key areas</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Arithmetic: operations, fractions, decimals, percentages.</li>
+              <li>Algebra: expressions, equations, inequalities.</li>
+              <li>Geometry: shapes, angles, area, volume.</li>
+              <li>Functions & graphs: linear, quadratic, exponential.</li>
+              <li>Statistics & probability: data, mean/median, basic probability.</li>
+            </ul>
+
+            <h4>Beginner practice plan</h4>
+            <ol style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Review arithmetic with mixed problems (fractions, decimals, %).</li>
+              <li>Practice solving linear equations (e.g. 2x + 3 = 11).</li>
+              <li>Learn area & perimeter formulas for common shapes.</li>
+              <li>Plot simple linear graphs (y = mx + c).</li>
+            </ol>
+
+            <h4>Next steps</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Quadratic equations and factorising.</li>
+              <li>Trigonometry basics (sin, cos, tan in right triangles).</li>
+              <li>Basic probability trees and combinations.</li>
+            </ul>
+          `
+        },
+        {
+          id: 'english',
+          name: '📖 English',
+          content: `
+            <h3 style="margin-top:0;">English</h3>
+            <p>Improve reading, writing, grammar, and vocabulary.</p>
+
+            <h4>Key areas</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Reading: comprehension, inference, summarising.</li>
+              <li>Writing: paragraphs, essays, stories, reports.</li>
+              <li>Grammar: tenses, sentence structure, punctuation.</li>
+              <li>Vocabulary: synonyms, antonyms, word roots.</li>
+              <li>Analysis: themes, characters, literary devices.</li>
+            </ul>
+
+            <h4>Beginner practice plan</h4>
+            <ol style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Read a short text daily and summarise it in 3–5 sentences.</li>
+              <li>Practice writing clear paragraphs (topic sentence + support).</li>
+              <li>Review key grammar: present/past/future tenses.</li>
+              <li>Learn 5–10 new words per day with example sentences.</li>
+            </ol>
+
+            <h4>Next steps</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Write full essays (intro, body, conclusion).</li>
+              <li>Analyze poems and short stories (themes, devices).</li>
+              <li>Practice advanced punctuation (semicolons, colons, dashes).</li>
+            </ul>
+          `
+        },
+        {
+          id: 'languages',
+          name: '🌍 Languages',
+          content: `
+            <h3 style="margin-top:0;">Languages</h3>
+            <p>Learn new languages: vocabulary, grammar, speaking, and listening.</p>
+
+            <h4>Key areas</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Vocabulary: common words, phrases, themed lists.</li>
+              <li>Grammar: sentence structure, verb conjugations, gender/number.</li>
+              <li>Listening: dialogues, songs, videos.</li>
+              <li>Speaking: pronunciation, shadowing, conversations.</li>
+              <li>Reading & writing: short texts, messages, stories.</li>
+            </ul>
+
+            <h4>Beginner practice plan (any language)</h4>
+            <ol style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Learn greetings, numbers, days, and common phrases.</li>
+              <li>Practice basic sentence patterns (I am…, I have…, I like…).</li>
+              <li>Listen to short dialogues daily and repeat out loud.</li>
+              <li>Write 3–5 simple sentences about your day.</li>
+            </ol>
+
+            <h4>Next steps</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Expand vocabulary by themes (food, travel, hobbies).</li>
+              <li>Learn past and future tenses.</li>
+              <li>Have short conversations or language exchanges.</li>
+            </ul>
+          `
+        },
+        {
+          id: 'science',
+          name: '🔬 Science',
+          content: `
+            <h3 style="margin-top:0;">Science</h3>
+            <p>Explore biology, chemistry, and physics concepts.</p>
+
+            <h4>Key areas</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Biology: cells, organisms, human body, ecosystems.</li>
+              <li>Chemistry: atoms, elements, reactions, acids & bases.</li>
+              <li>Physics: forces, motion, energy, electricity, waves.</li>
+              <li>Scientific method: hypotheses, experiments, data.</li>
+            </ul>
+
+            <h4>Beginner practice plan</h4>
+            <ol style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Learn the structure of a cell and major organelles.</li>
+              <li>Review the periodic table: groups, periods, common elements.</li>
+              <li>Understand Newton’s laws and basic force diagrams.</li>
+              <li>Practice simple calculations: speed = distance/time, etc.</li>
+            </ol>
+
+            <h4>Next steps</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Balancing chemical equations.</li>
+              <li>Energy transformations and conservation.</li>
+              <li>Genetics basics (DNA, traits, Punnett squares).</li>
+            </ul>
+          `
+        },
+        {
+          id: 'history',
+          name: '🏛️ History',
+          content: `
+            <h3 style="margin-top:0;">History</h3>
+            <p>Understand past events, civilizations, and causes/effects.</p>
+
+            <h4>Key areas</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Ancient civilizations: Egypt, Greece, Rome, etc.</li>
+              <li>Medieval & early modern periods.</li>
+              <li>Revolutions, wars, and social changes.</li>
+              <li>Cause & effect, sources, and perspectives.</li>
+            </ul>
+
+            <h4>Beginner practice plan</h4>
+            <ol style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Pick one civilization and learn: location, time, key facts.</li>
+              <li>Create a simple timeline of major events.</li>
+              <li>Summarize one important event: causes, what happened, effects.</li>
+              <li>Compare two societies or periods (similarities & differences).</li>
+            </ol>
+
+            <h4>Next steps</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Study primary sources (letters, laws, speeches).</li>
+              <li>Analyze why wars or revolutions started.</li>
+              <li>Write short essays with clear arguments and evidence.</li>
+            </ul>
+          `
+        },
+        {
+          id: 'geography',
+          name: '🌎 Geography',
+          content: `
+            <h3 style="margin-top:0;">Geography</h3>
+            <p>Learn about places, environments, and human–earth interactions.</p>
+
+            <h4>Key areas</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Physical: landforms, climate, biomes, natural hazards.</li>
+              <li>Human: population, cities, economies, cultures.</li>
+              <li>Maps: coordinates, scale, symbols, GIS basics.</li>
+              <li>Environment: resources, pollution, sustainability.</li>
+            </ul>
+
+            <h4>Beginner practice plan</h4>
+            <ol style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Learn continents, oceans, and major countries.</li>
+              <li>Study one biome (e.g. rainforest, desert) in detail.</li>
+              <li>Practice reading maps: legends, scale, directions.</li>
+              <li>Explore how humans impact one environment (e.g. cities, rivers).</li>
+            </ol>
+
+            <h4>Next steps</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Climate zones and why they differ.</li>
+              <li>Population pyramids and migration patterns.</li>
+              <li>Case studies: natural disasters, urban growth, conservation.</li>
+            </ul>
+          `
+        },
+        {
+          id: 'computing',
+          name: '💻 Computing',
+          content: `
+            <h3 style="margin-top:0;">Computing</h3>
+            <p>Learn coding, algorithms, and digital skills.</p>
+
+            <h4>Key areas</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Programming: variables, loops, functions, data structures.</li>
+              <li>Algorithms: sorting, searching, problem solving.</li>
+              <li>Web: HTML, CSS, JavaScript basics.</li>
+              <li>Digital literacy: files, security, online safety.</li>
+            </ul>
+
+            <h4>Beginner practice plan</h4>
+            <ol style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Learn basic syntax in one language (e.g. Python or JS).</li>
+              <li>Write small programs: calculator, to‑do list, quiz.</li>
+              <li>Practice breaking problems into steps (pseudocode).</li>
+              <li>Build a simple webpage with HTML & CSS.</li>
+            </ol>
+
+            <h4>Next steps</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Learn arrays/lists, dictionaries/objects.</li>
+              <li>Implement basic algorithms (linear search, bubble sort).</li>
+              <li>Add interactivity with JavaScript.</li>
+            </ul>
+          `
+        },
+        {
+          id: 'art-design',
+          name: '🎨 Art & Design',
+          content: `
+            <h3 style="margin-top:0;">Art & Design</h3>
+            <p>Develop drawing, painting, and design skills.</p>
+
+            <h4>Key areas</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Drawing: lines, shapes, shading, perspective.</li>
+              <li>Color: hue, saturation, value, color schemes.</li>
+              <li>Composition: rule of thirds, balance, focal points.</li>
+              <li>Design: typography, layout, branding basics.</li>
+            </ul>
+
+            <h4>Beginner practice plan</h4>
+            <ol style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Practice basic shapes and forms daily (cubes, spheres).</li>
+              <li>Do value scales (light to dark) with pencil or charcoal.</li>
+              <li>Copy simple objects focusing on proportions.</li>
+              <li>Experiment with one color scheme per drawing.</li>
+            </ol>
+
+            <h4>Next steps</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>One‑point and two‑point perspective scenes.</li>
+              <li>Portrait and figure studies.</li>
+              <li>Small design projects: poster, logo, social post.</li>
+            </ul>
+          `
+        }
+      ];
+
+      let currentSubject = null;
+
+      function renderList() {
+        listEl.innerHTML = subjects.map(sub => `
+          <div class="convo-item ${currentSubject === sub.id ? 'active' : ''}" data-id="${sub.id}">
+            <div style="font-weight:600;">${sub.name}</div>
+          </div>
+        `).join('');
+
+        listEl.querySelectorAll('.convo-item').forEach(el => {
+          el.addEventListener('click', () => {
+            currentSubject = el.dataset.id;
+            renderList();
+            renderContent();
+          });
+        });
+      }
+
+      function renderContent() {
+        const sub = subjects.find(s => s.id === currentSubject);
+        if (!sub) {
+          contentEl.innerHTML = '<div style="color:#aaa;">Select a subject.</div>';
+          return;
+        }
+        contentEl.innerHTML = sub.content;
+      }
+
+      renderList();
+    }
+
+    // ====== SPORTS TAB (RULES, HOW TO PLAY, ROUTINES) ======
+    function initSports() {
+      const listEl = document.getElementById('sports-list');
+      const contentEl = document.getElementById('sports-content');
+      if (!listEl || !contentEl) return;
+
+      const sports = [
+        {
+          id: 'football',
+          name: '⚽ Football (Soccer)',
+          content: `
+            <h3 style="margin-top:0;">Football (Soccer)</h3>
+            <p>A team sport played with a round ball, focused on scoring goals by getting the ball into the opponent’s net.</p>
+
+            <h4>Basic rules</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Two teams of 11 players (including a goalkeeper).</li>
+              <li>Match length: usually 2 × 45 minutes.</li>
+              <li>No hands or arms for outfield players (only goalkeeper in their area).</li>
+              <li>Fouls: tripping, pushing, handball, dangerous play.</li>
+              <li>Offside rule: attackers can’t be behind the last defender when the ball is played to them.</li>
+            </ul>
+
+            <h4>How to play</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Objective: score more goals than the other team.</li>
+              <li>Use passing, dribbling, and shooting to move the ball.</li>
+              <li>Defenders try to stop attacks and win the ball back.</li>
+              <li>Goalkeeper tries to stop shots on goal.</li>
+            </ul>
+
+            <h4>Beginner routine (2–3 times/week)</h4>
+            <ol style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Warm‑up: 5–10 min light jog + dynamic stretches.</li>
+              <li>Ball work: 10 min dribbling through cones, 10 min passing against a wall.</li>
+              <li>Shooting: 10–15 min shooting from different angles.</li>
+              <li>Small‑sided game: 3v3 or 5v5 to practice skills in game situations.</li>
+              <li>Cool‑down: light jog + static stretching.</li>
+            </ol>
+
+            <h4>Tips for beginners</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Keep your head up when dribbling to see teammates.</li>
+              <li>Use short, crisp passes; don’t always kick hard.</li>
+              <li>Work on both feet, not just your dominant one.</li>
+              <li>Communicate with teammates (“man on”, “time”, “switch”).</li>
+            </ul>
+          `
+        },
+        {
+          id: 'basketball',
+          name: '🏀 Basketball',
+          content: `
+            <h3 style="margin-top:0;">Basketball</h3>
+            <p>A fast team sport where players score by shooting a ball through the opponent’s hoop.</p>
+
+            <h4>Basic rules</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>5 players per team on the court.</li>
+              <li>Game length: typically 4 quarters (length varies by league).</li>
+              <li>Dribble to move; cannot walk/run with the ball without dribbling (traveling).</li>
+              <li>Fouls: hitting arms, blocking, charging, etc.</li>
+              <li>Scoring: 2 points (inside arc), 3 points (outside arc), 1 point (free throws).</li>
+            </ul>
+
+            <h4>How to play</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Offense: move the ball, create open shots, drive to the basket.</li>
+              <li>Defense: stay between your player and the basket, contest shots, rebound.</li>
+              <li>Use passes (chest, bounce, overhead) to move quickly.</li>
+              <li>Rebound missed shots on both ends.</li>
+            </ul>
+
+            <h4>Beginner routine (2–3 times/week)</h4>
+            <ol style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Warm‑up: 5 min jog + dynamic stretches.</li>
+              <li>Dribbling: 10 min stationary (crossovers, between legs), 10 min moving dribble.</li>
+              <li>Shooting: 10–15 min form shooting close to the basket, then mid‑range.</li>
+              <li>Layups: practice right and left hand layups.</li>
+              <li>Conditioning: short sprints, defensive slides.</li>
+              <li>Cool‑down: stretching.</li>
+            </ol>
+
+            <h4>Tips for beginners</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Keep knees bent and stay low on defense.</li>
+              <li>Use your non‑dominant hand as much as your dominant one.</li>
+              <li>Look to pass first, then shoot when open.</li>
+              <li>Box out on rebounds (get between opponent and basket).</li>
+            </ul>
+          `
+        },
+        {
+          id: 'cricket',
+          name: '🏏 Cricket',
+          content: `
+            <h3 style="margin-top:0;">Cricket</h3>
+            <p>A bat‑and‑ball game played between two teams, focused on scoring runs and taking wickets.</p>
+
+            <h4>Basic rules</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Two teams: one bats, one bowls/fields, then they swap.</li>
+              <li>Overs: 6 legal balls bowled by one bowler = 1 over.</li>
+              <li>Runs: hitting the ball and running between wickets, or boundaries (4/6).</li>
+              <li>Wickets: bowler hits stumps, catcher takes hit ball, run‑out, etc.</li>
+              <li>Formats: T20 (20 overs), One‑Day (50 overs), Test (multi‑day).</li>
+            </ul>
+
+            <h4>How to play</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Batters try to score runs while protecting their wicket.</li>
+              <li>Bowler tries to get batters out and limit runs.</li>
+              <li>Fielders stop runs and try to catch or run batters out.</li>
+              <li>Team with more runs at the end wins.</li>
+            </ul>
+
+            <h4>Beginner routine (batting/bowling)</h4>
+            <ol style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Warm‑up: 5–10 min jog + dynamic stretches.</li>
+              <li>Batting: 15 min shadow batting (footwork, straight drive, cut, pull).</li>
+              <li>Bowling: 15 min run‑up and line/length practice.</li>
+              <li>Fielding: 10 min catching drills, 10 min ground fielding & throwing.</li>
+              <li>Fitness: short sprints, core work.</li>
+              <li>Cool‑down: stretching.</li>
+            </ol>
+
+            <h4>Tips for beginners</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Watch the ball closely from the bowler’s hand.</li>
+              <li>Keep your head still and eyes level when playing shots.</li>
+              <li>Bowlers: focus on consistent line and length before speed/variations.</li>
+              <li>Fielders: call for catches loudly (“yes”, “mine”).</li>
+            </ul>
+          `
+        },
+        {
+          id: 'tennis',
+          name: '🎾 Tennis',
+          content: `
+            <h3 style="margin-top:0;">Tennis</h3>
+            <p>A racquet sport played in singles (1v1) or doubles (2v2), hitting a ball over a net into the opponent’s court.</p>
+
+            <h4>Basic rules</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Points: 15, 30, 40, game; games make sets; sets make match.</li>
+              <li>Ball must bounce once at most on your side; you must hit it over the net.</li>
+              <li>If ball lands outside lines, it’s out (point to opponent).</li>
+              <li>Serve: start each point; must land in diagonal service box.</li>
+            </ul>
+
+            <h4>How to play</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Serve to start each point.</li>
+              <li>Rally: hit forehands, backhands, volleys, and smashes.</li>
+              <li>Try to move opponent and create open court for winners.</li>
+              <li>Minimize unforced errors (hitting out or into net).</li>
+            </ul>
+
+            <h4>Beginner routine (2–3 times/week)</h4>
+            <ol style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Warm‑up: 5 min jog + dynamic stretches (arms, legs).</li>
+              <li>Shadow swings: 5 min forehand, 5 min backhand without ball.</li>
+              <li>Wall practice: 10–15 min rallying against a wall.</li>
+              <li>Serve practice: 10 min focusing on toss and contact point.</li>
+              <li>Footwork: ladder drills or cone shuffles.</li>
+              <li>Cool‑down: stretching.</li>
+            </ol>
+
+            <h4>Tips for beginners</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Keep your eye on the ball until contact.</li>
+              <li>Use your legs and rotate your body, not just your arm.</li>
+              <li>Stay on your toes, ready to move in any direction.</li>
+              <li>Start with consistency before trying powerful shots.</li>
+            </ul>
+          `
+        },
+        {
+          id: 'athletics',
+          name: '🏃 Athletics (Track & Field)',
+          content: `
+            <h3 style="margin-top:0;">Athletics (Track & Field)</h3>
+            <p>Includes running, jumping, and throwing events on a track and field area.</p>
+
+            <h4>Main event groups</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Running: sprints (100m, 200m), middle distance (800m, 1500m), long distance, hurdles, relays.</li>
+              <li>Jumps: long jump, high jump, triple jump, pole vault.</li>
+              <li>Throws: shot put, discus, javelin, hammer.</li>
+            </ul>
+
+            <h4>Basic rules (general)</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Runners must stay in their lane (for sprints/hurdles).</li>
+              <li>Jumpers/throwers get a set number of attempts; best mark counts.</li>
+              <li>False starts in sprints can lead to disqualification.</li>
+              <li>Throw/jump implements must land inside marked sectors.</li>
+            </ul>
+
+            <h4>Beginner running routine (3 times/week)</h4>
+            <ol style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Day 1: Easy run 20–30 min + strides (4 × 60m fast but controlled).</li>
+              <li>Day 2: Intervals – e.g. 6 × 200m fast with 200m jog recovery.</li>
+              <li>Day 3: Longer steady run 30–40 min.</li>
+              <li>Include warm‑up (jog + drills) and cool‑down (jog + stretch) each session.</li>
+            </ol>
+
+            <h4>Tips for beginners</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Start with comfortable paces; build gradually.</li>
+              <li>Focus on good posture: tall, relaxed shoulders, strong core.</li>
+              <li>For jumps/throws, learn technique before adding power.</li>
+              <li>Rest days are important to avoid injury.</li>
+            </ul>
+          `
+        },
+        {
+          id: 'swimming',
+          name: '🏊 Swimming',
+          content: `
+            <h3 style="margin-top:0;">Swimming</h3>
+            <p>A water sport with different strokes, raced over various distances in a pool or open water.</p>
+
+            <h4>Main strokes</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Freestyle (front crawl): fastest stroke, alternating arms, flutter kick.</li>
+              <li>Backstroke: on your back, alternating arms, flutter kick.</li>
+              <li>Breaststroke: symmetrical arm pull, frog kick.</li>
+              <li>Butterfly: simultaneous arm pull, dolphin kick.</li>
+            </ul>
+
+            <h4>Basic rules (pool racing)</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Stay in your lane; touching walls/ends correctly for turns & finishes.</li>
+              <li>Each stroke has specific rules for arms, legs, and turns.</li>
+              <li>False starts can lead to disqualification.</li>
+            </ul>
+
+            <h4>Beginner routine (2–3 times/week)</h4>
+            <ol style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Warm‑up: 200–400m easy swim (any stroke).</li>
+              <li>Drills: 4 × 50m focusing on technique (e.g. catch, body position).</li>
+              <li>Main set: e.g. 8 × 50m with 20–30s rest, building speed.</li>
+              <li>Cool‑down: 100–200m very easy.</li>
+              <li>Practice breathing rhythm and body alignment.</li>
+            </ol>
+
+            <h4>Tips for beginners</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Keep your body as horizontal as possible.</li>
+              <li>Exhale continuously underwater, inhale quickly when turning head to breathe.</li>
+              <li>Focus on long, smooth strokes rather than splashing.</li>
+              <li>Use goggles and a cap for comfort and less drag.</li>
+            </ul>
+          `
+        },
+        {
+          id: 'volleyball',
+          name: '🏐 Volleyball',
+          content: `
+            <h3 style="margin-top:0;">Volleyball</h3>
+            <p>A team sport where players hit a ball over a high net, trying to ground it on the opponent’s side.</p>
+
+            <h4>Basic rules</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>6 players per team on court (can vary in beach/recreational).</li>
+              <li>Maximum 3 contacts per side before sending ball over net.</li>
+              <li>Same player cannot touch ball twice in a row (except after a block).</li>
+              <li>Points scored when ball lands in opponent’s court or they make an error.</li>
+            </ul>
+
+            <h4>How to play</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Serve to start each rally.</li>
+              <li>Receive serve (pass), set to attacker, then spike.</li>
+              <li>Block at the net and dig attacks on defense.</li>
+              <li>Rotate positions after winning a serve back.</li>
+            </ul>
+
+            <h4>Beginner routine (2 times/week)</h4>
+            <ol style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Warm‑up: 5–10 min jog + dynamic stretches.</li>
+              <li>Passing drills: 10 min forearm passing in pairs.</li>
+              <li>Setting drills: 10 min overhead setting to a target.</li>
+              <li>Serving: 10–15 min practicing consistent serves over net.</li>
+              <li>Footwork & jumping: ladder drills, box jumps.</li>
+              <li>Cool‑down: stretching.</li>
+            </ol>
+
+            <h4>Tips for beginners</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Watch the ball onto your arms when passing.</li>
+              <li>Use your legs, not just arms, for setting and hitting.</li>
+              <li>Call the ball (“mine”, “out”) to avoid collisions.</li>
+              <li>Stay low and ready to move in all directions.</li>
+            </ul>
+          `
+        },
+        {
+          id: 'badminton',
+          name: '🏸 Badminton',
+          content: `
+            <h3 style="margin-top:0;">Badminton</h3>
+            <p>A racquet sport played with a shuttlecock over a net, in singles or doubles.</p>
+
+            <h4>Basic rules</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Singles (1v1) or doubles (2v2).</li>
+              <li>Games to 21 points (rally scoring).</li>
+              <li>Shuttle must land inside boundary lines to be “in”.</li>
+              <li>Shuttle cannot be carried or hit twice in a row by same player.</li>
+            </ul>
+
+            <h4>How to play</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Serve diagonally to start each rally.</li>
+              <li>Use clears, drops, drives, smashes, and net shots.</li>
+              <li>Move quickly to cover the court; recover to base position.</li>
+              <li>In doubles, coordinate with partner (front/back or side‑by‑side).</li>
+            </ul>
+
+            <h4>Beginner routine (2 times/week)</h4>
+            <ol style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Warm‑up: 5 min jog + dynamic stretches.</li>
+              <li>Footwork: 10 min shadow movement to corners.</li>
+              <li>Stroke practice: 10 min clears and drops with partner/wall.</li>
+              <li>Serving: 10 min practicing low and high serves.</li>
+              <li>Conditioning: short sprints, lunges, core.</li>
+              <li>Cool‑down: stretching.</li>
+            </ol>
+
+            <h4>Tips for beginners</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Keep racket up and ready in front of you.</li>
+              <li>Use wrist and fingers for control, not just big swings.</li>
+              <li>Watch the shuttle closely, especially near the net.</li>
+              <li>Work on consistent serves before tricky ones.</li>
+            </ul>
+          `
+        },
+        {
+          id: 'hockey',
+          name: '🏒 Hockey (Field/Ice)',
+          content: `
+            <h3 style="margin-top:0;">Hockey (Field / Ice)</h3>
+            <p>Team sport where players use a stick to move a ball (field) or puck (ice) into the opponent’s goal.</p>
+
+            <h4>Basic rules (field hockey)</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>11 players per team on a rectangular field.</li>
+              <li>Only the flat side of the stick can be used.</li>
+              <li>Goals count when shot from inside the shooting circle.</li>
+              <li>Penalties: free hits, penalty corners, penalty strokes.</li>
+            </ul>
+
+            <h4>How to play</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Dribble, pass, and shoot to create scoring chances.</li>
+              <li>Defenders try to block passes, tackle, and clear the ball.</li>
+              <li>Goalkeeper defends the goal with pads, stick, and body.</li>
+              <li>Team with more goals wins.</li>
+            </ul>
+
+            <h4>Beginner routine (field hockey, 2 times/week)</h4>
+            <ol style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Warm‑up: 5–10 min jog + dynamic stretches.</li>
+              <li>Stick skills: 10 min dribbling through cones, 10 min passing.</li>
+              <li>Shooting: 10 min hitting and flicking at goal.</li>
+              <li>Small‑sided games: 3v3 or 4v4 to practice under pressure.</li>
+              <li>Conditioning: sprints, agility drills.</li>
+              <li>Cool‑down: stretching.</li>
+            </ol>
+
+            <h4>Tips for beginners</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Keep the ball close when dribbling.</li>
+              <li>Use your body position to shield the ball from opponents.</li>
+              <li>Communicate with teammates (“man on”, “turn”, “pass”).</li>
+              <li>Practice both forehand and backhand skills.</li>
+            </ul>
+          `
+        },
+        {
+          id: 'rugby',
+          name: '🏉 Rugby',
+          content: `
+            <h3 style="margin-top:0;">Rugby</h3>
+            <p>A physical team sport where players carry, pass, and kick an oval ball to score tries and goals.</p>
+
+            <h4>Basic rules (union, simplified)</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>15 players per team on the field.</li>
+              <li>Ball can be passed backwards or kicked forwards, not passed forwards.</li>
+              <li>Scoring: try (ground ball in opponent’s in‑goal), conversions, penalties, drop goals.</li>
+              <li>Tackles: must be below shoulders; ball carrier must release after tackle.</li>
+              <li>Set pieces: scrums, lineouts, rucks, mauls.</li>
+            </ul>
+
+            <h4>How to play</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Attack: run lines, pass backwards, kick strategically.</li>
+              <li>Defense: tackle, contest possession, stay organized.</li>
+              <li>Support the ball carrier constantly.</li>
+              <li>Compete for ball at rucks/mauls legally.</li>
+            </ul>
+
+            <h4>Beginner routine (2 times/week)</h4>
+            <ol style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Warm‑up: 5–10 min jog + dynamic stretches.</li>
+              <li>Ball skills: 10 min passing in pairs, 10 min catching under pressure.</li>
+              <li>Tackle technique: 10–15 min safe tackle drills (coach‑led if possible).</li>
+              <li>Running: short sprints, change of direction drills.</li>
+              <li>Strength: bodyweight exercises (push‑ups, squats, core).</li>
+              <li>Cool‑down: stretching.</li>
+            </ol>
+
+            <h4>Tips for beginners</h4>
+            <ul style="margin:0; padding-left:18px; color:#ddd;">
+              <li>Always pass backwards; watch your support runners.</li>
+              <li>Keep eyes open and communicate on defense.</li>
+              <li>Learn proper tackle technique to stay safe.</li>
+              <li>Work on fitness: speed, endurance, and strength.</li>
+            </ul>
+          `
+        }
+      ];
+
+      let currentSport = null;
+
+      function renderList() {
+        listEl.innerHTML = sports.map(sport => `
+          <div class="convo-item ${currentSport === sport.id ? 'active' : ''}" data-id="${sport.id}">
+            <div style="font-weight:600;">${sport.name}</div>
+          </div>
+        `).join('');
+
+        listEl.querySelectorAll('.convo-item').forEach(el => {
+          el.addEventListener('click', () => {
+            currentSport = el.dataset.id;
+            renderList();
+            renderContent();
+          });
+        });
+      }
+
+      function renderContent() {
+        const sport = sports.find(s => s.id === currentSport);
+        if (!sport) {
+          contentEl.innerHTML = '<div style="color:#aaa;">Select a sport.</div>';
+          return;
+        }
+        contentEl.innerHTML = sport.content;
+      }
+
+      renderList();
+    }
 
     // ====== INIT ON LOAD ======
     document.addEventListener('DOMContentLoaded', () => {
-      // Auth overlay is shown by default until user logs in / signs up / goes guest
+      initAuth();
+      initTabs();
+      initChessTab();
+      initAiChat();
+      initMessageStyle();
+      initBackgroundSettings();
+      initChat();
+      initInstruments();
+      initStudy();
+      initSports();
     });
   </script>
 </body>

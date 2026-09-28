@@ -1018,6 +1018,11 @@
         font-size: .9rem;
       }
     }
+
+
+    /* Expanded content hubs */
+    .hub-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:12px}.hub-card{padding:14px;text-align:left}.hub-card h3{margin:0 0 7px;font-size:.95rem}.hub-card p{margin:0;color:var(--muted);font-size:.78rem;line-height:1.45}.simple-page-card{max-width:1000px;padding:18px}.simple-page-card h3{margin-top:0}.tool-row{display:flex;gap:8px;margin:12px 0}.tool-row input{min-width:0;padding:10px}.tool-list-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px;margin:7px 0;border:1px solid rgba(53,185,255,.25);border-radius:7px;background:rgba(7,24,57,.72)}.tool-list-item label{display:flex;align-items:center;gap:9px;flex:1;cursor:pointer}
+
   </style>
 </head>
 
@@ -1069,11 +1074,20 @@
   <nav class="sidebar">
     <button class="nav-btn active" data-page="home">⌂<span>Home</span></button>
     <button class="nav-btn" data-page="chess">♟<span>Chess</span></button>
+    <button class="nav-btn" data-page="games">🎮<span>Games</span></button>
     <button class="nav-btn" data-page="chat">◉<span>Chat</span></button>
     <button class="nav-btn" data-page="ai">✦<span>AI</span></button>
     <button class="nav-btn" data-page="learn">▣<span>Learn</span></button>
     <button class="nav-btn" data-page="instruments">♫<span>Music</span></button>
     <button class="nav-btn" data-page="sports">★<span>Sports</span></button>
+    <button class="nav-btn" data-page="fitness">💪<span>Fitness</span></button>
+    <button class="nav-btn" data-page="creative">🎨<span>Create</span></button>
+    <button class="nav-btn" data-page="firstaid">🩹<span>First Aid</span></button>
+    <button class="nav-btn" data-page="nature">🌿<span>Nature</span></button>
+    <button class="nav-btn" data-page="space">🚀<span>Space</span></button>
+    <button class="nav-btn" data-page="books">📚<span>Books</span></button>
+    <button class="nav-btn" data-page="planner">📅<span>Planner</span></button>
+    <button class="nav-btn" data-page="notes">📝<span>Notes</span></button>
     <button class="nav-btn" data-page="profile">◌<span>Profile</span></button>
   </nav>
 
@@ -1417,6 +1431,17 @@
         </div>
       </div>
     </section>
+
+    <section class="page" id="page-games"><div class="page-head"><h1>Games</h1><p>Games, quizzes, challenges, and brain-training ideas.</p></div><div class="hub-grid" id="games-hub"></div></section>
+    <section class="page" id="page-fitness"><div class="page-head"><h1>Fitness</h1><p>Routines, mobility, cardio, strength, recovery, and healthy habits.</p></div><div class="hub-grid" id="fitness-hub"></div></section>
+    <section class="page" id="page-creative"><div class="page-head"><h1>Creative Hub</h1><p>Art, design, photography, writing, crafts, performance, and video.</p></div><div class="hub-grid" id="creative-hub"></div></section>
+    <section class="page" id="page-firstaid"><div class="page-head"><h1>First Aid</h1><p>Educational reminders only. In an emergency, call local emergency services.</p></div><div class="hub-grid" id="firstaid-hub"></div></section>
+    <section class="page" id="page-nature"><div class="page-head"><h1>Nature</h1><p>Wildlife, plants, gardening, ecosystems, conservation, and outdoors.</p></div><div class="hub-grid" id="nature-hub"></div></section>
+    <section class="page" id="page-space"><div class="page-head"><h1>Space</h1><p>Planets, stars, galaxies, rockets, astronomy, and exploration.</p></div><div class="hub-grid" id="space-hub"></div></section>
+    <section class="page" id="page-books"><div class="page-head"><h1>Books & Media</h1><p>Books, movies, television, anime, podcasts, and watchlists.</p></div><div class="hub-grid" id="books-hub"></div></section>
+    <section class="page" id="page-notes"><div class="page-head"><h1>Notes</h1><p>Private notes saved in this browser.</p></div><div class="card simple-page-card"><textarea id="notes-area" placeholder="Write your notes here..." style="width:100%;min-height:330px;padding:12px;background:#071832;color:#fff;border:1px solid var(--border);border-radius:8px;"></textarea><div style="margin-top:10px;"><button class="btn btn-primary" id="notes-save">Save Notes</button><span id="notes-note" style="display:none;color:#55f5ac;margin-left:8px;">Saved!</span></div></div></section>
+    <section class="page" id="page-planner"><div class="page-head"><h1>Planner</h1><p>Tasks, goals, and habits saved in this browser.</p></div><div class="simple-grid"><div class="card simple-page-card"><h3>Tasks</h3><div class="tool-row"><input id="task-input" placeholder="Add a task..."><button class="btn btn-primary" id="task-add">Add</button></div><div id="task-list"></div></div><div class="card simple-page-card"><h3>Goals</h3><div class="tool-row"><input id="goal-input" placeholder="Add a goal..."><button class="btn btn-primary" id="goal-add">Add</button></div><div id="goal-list"></div></div><div class="card simple-page-card"><h3>Habits</h3><div class="tool-row"><input id="habit-input" placeholder="Add a habit..."><button class="btn btn-primary" id="habit-add">Add</button></div><div id="habit-list"></div></div></div></section>
+
   </main>
 
   <script>
@@ -2997,6 +3022,21 @@
       applyBackground();
     }
 
+
+    function initHub(id, items){const target=document.getElementById(id);if(!target)return;target.innerHTML=items.map(item=>`<article class="card hub-card"><h3>${item[0]}</h3><p>${item[1]}</p></article>`).join('');}
+    function setupTool(inputId,buttonId,listId,key){const input=document.getElementById(inputId),button=document.getElementById(buttonId),list=document.getElementById(listId);if(!input||!button||!list)return;let items;try{items=JSON.parse(localStorage.getItem(key)||'[]')}catch{items=[]}const save=()=>localStorage.setItem(key,JSON.stringify(items));const render=()=>{list.innerHTML='';if(!items.length){list.innerHTML='<div class="muted">Nothing added yet.</div>';return}items.forEach((item,index)=>{const row=document.createElement('div');row.className='tool-list-item';const label=document.createElement('label');const check=document.createElement('input');check.type='checkbox';check.checked=!!item.done;check.style.width='18px';check.addEventListener('change',()=>{items[index].done=check.checked;save();render()});const span=document.createElement('span');span.textContent=item.text;span.style.textDecoration=item.done?'line-through':'none';span.style.opacity=item.done?'.55':'1';label.append(check,span);const del=document.createElement('button');del.className='btn btn-danger';del.textContent='Delete';del.addEventListener('click',()=>{items.splice(index,1);save();render()});row.append(label,del);list.append(row)})};const add=()=>{const value=input.value.trim();if(!value)return;items.push({text:value,done:false});input.value='';save();render()};button.addEventListener('click',add);input.addEventListener('keydown',e=>{if(e.key==='Enter')add()});render();}
+    function initExtras(){
+      initHub('games-hub',[['🐍 Snake','Classic arcade challenge.'],['⭕ Tic-Tac-Toe','Quick strategy game.'],['🧠 Memory','Match cards and train recall.'],['🔢 2048','Combine numbers to reach 2048.'],['🏓 Pong','Classic paddle arcade game.'],['🧩 Puzzles','Logic and pattern challenges.'],['❓ Quizzes','General knowledge and subject quizzes.'],['🏆 Challenges','Daily learning and creativity prompts.']]);
+      initHub('fitness-hub',[['🏋️ Strength','Bodyweight basics and safe form.'],['🏃 Cardio','Walking, running, cycling, and intervals.'],['🧘 Mobility','Flexibility and joint movement.'],['💤 Recovery','Sleep, rest, and recovery habits.'],['🥗 Nutrition','Simple balanced meal ideas.'],['⚽ Sport fitness','Agility, speed, and coordination.'],['🔥 Warm-ups','Dynamic warm-ups before exercise.'],['🧊 Cool-downs','Gentle recovery after sessions.']]);
+      initHub('creative-hub',[['🎨 Drawing','Lines, shapes, shading, and perspective.'],['🖌️ Painting','Colour, brushes, and composition.'],['📷 Photography','Light, framing, and editing basics.'],['✍️ Writing','Stories, poems, scripts, and journaling.'],['🧵 Crafts','Creative hands-on project ideas.'],['🎬 Video','Storyboards, edits, and short films.'],['🖼️ Design','Logos, posters, layout, and typography.'],['🎭 Theatre','Performance, characters, and scripts.']]);
+      initHub('firstaid-hub',[['🩹 Cuts & grazes','Clean and cover minor wounds.'],['🔥 Burns','Cool with running water; seek help for serious burns.'],['🤕 Head injury','Watch for warning signs and seek urgent help if needed.'],['🦴 Sprains','Rest and seek advice for severe pain or deformity.'],['🫁 Breathing emergency','Call emergency services immediately.'],['❤️ CPR basics','Use accredited training for hands-on learning.'],['☀️ Heat safety','Hydrate, rest, and cool down.'],['❄️ Cold safety','Warm gradually and remove wet clothing.']]);
+      initHub('nature-hub',[['🌿 Plants','Plant identification and care.'],['🦊 Wildlife','Respectful wildlife observation.'],['🌲 Forests','Ecosystems and habitats.'],['🌊 Oceans','Marine life and conservation.'],['🌱 Gardening','Seeds, soil, watering, and sunlight.'],['🥾 Hiking','Planning and outdoor safety.'],['♻️ Conservation','Reducing waste and protecting habitats.'],['🌦️ Weather','Clouds, seasons, and climate.']]);
+      initHub('space-hub',[['🪐 Planets','The Solar System and worlds beyond.'],['⭐ Stars','How stars form and change.'],['🌌 Galaxies','Milky Way, galaxies, and scale.'],['🚀 Rockets','Launches, orbits, and exploration.'],['🌕 Moon','Phases, eclipses, and missions.'],['🔭 Astronomy','Observing the night sky.'],['🛰️ Satellites','Communications, GPS, and science.'],['👩‍🚀 Astronauts','Living and working in space.']]);
+      initHub('books-hub',[['📚 Reading lists','Build a list by genre or goal.'],['🧙 Fantasy','World-building and adventure.'],['🕵️ Mystery','Clues, investigations, and twists.'],['🚀 Sci-fi','Future worlds and science ideas.'],['🎬 Movies','Genres, directors, and reviews.'],['📺 TV','Series watchlists and discussion.'],['🌸 Anime','Genres and recommendations.'],['🎙️ Podcasts','Learning and entertainment audio.']]);
+      setupTool('task-input','task-add','task-list','cyclone_tasks');setupTool('goal-input','goal-add','goal-list','cyclone_goals');setupTool('habit-input','habit-add','habit-list','cyclone_habits');
+      const notes=document.getElementById('notes-area');if(notes){notes.value=localStorage.getItem('cyclone_notes')||'';document.getElementById('notes-save').addEventListener('click',()=>{localStorage.setItem('cyclone_notes',notes.value);const n=document.getElementById('notes-note');n.style.display='inline';setTimeout(()=>n.style.display='none',1200)})}
+    }
+
     /* ------------------------------ Init ------------------------------ */
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -3009,6 +3049,7 @@
       initAI();
       initChat();
       initProfile();
+      initExtras();
 
       initSelectionList("study-list", "study-content", subjects);
       initSelectionList("instrument-list", "instrument-content", instruments);

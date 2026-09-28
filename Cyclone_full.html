@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,23 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Cyclone</title>
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
   <style>
     :root {
-      --blue: #00b7ff;
-      --blue-light: #8be7ff;
-      --purple: #8b5cf6;
-      --bg: #020617;
-      --panel: rgba(7, 18, 43, .92);
-      --panel-2: rgba(10, 28, 65, .95);
-      --border: rgba(0, 183, 255, .38);
-      --text: #f2f8ff;
-      --muted: #91a9c9;
-      --green: #37f59a;
-      --red: #ff6b7a;
-      --board-light: #d8e9f5;
-      --board-dark: #3675a8;
+      --accent: #14b8ff;
+      --accent-2: #7b61ff;
+      --accent-soft: rgba(20, 184, 255, .22);
+      --text: #eff8ff;
+      --muted: #91a9c7;
+      --border: rgba(53, 185, 255, .38);
+      --panel: rgba(6, 18, 48, .9);
+      --panel-2: rgba(10, 30, 72, .92);
+      --page-bg: #020816;
+      --board-light: #d7eaf8;
+      --board-dark: #3677aa;
+      --message-colour: #168ad1;
+      --custom-image: none;
+      --gradient-1: #020816;
+      --gradient-2: #07336d;
+      --gradient-3: #160b3d;
     }
 
     * {
@@ -31,19 +31,20 @@
 
     html,
     body {
-      margin: 0;
+      width: 100%;
       min-height: 100%;
-      background: var(--bg);
+      margin: 0;
       color: var(--text);
       font-family: Arial, Helvetica, sans-serif;
+      background: var(--page-bg);
     }
 
     body {
       overflow-x: hidden;
       background:
-        radial-gradient(circle at 15% 12%, rgba(0, 183, 255, .18), transparent 28%),
-        radial-gradient(circle at 85% 80%, rgba(117, 58, 255, .18), transparent 32%),
-        linear-gradient(135deg, #020617, #071b3d 48%, #020617);
+        radial-gradient(circle at 13% 10%, rgba(0, 188, 255, .22), transparent 26%),
+        radial-gradient(circle at 88% 78%, rgba(116, 70, 255, .2), transparent 33%),
+        linear-gradient(135deg, #020816, #071e46 50%, #020816);
       background-attachment: fixed;
     }
 
@@ -51,13 +52,38 @@
       content: "";
       position: fixed;
       inset: 0;
-      z-index: -1;
+      z-index: -2;
       pointer-events: none;
-      opacity: .4;
+      opacity: .55;
       background:
-        linear-gradient(rgba(0, 183, 255, .025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 183, 255, .025) 1px, transparent 1px);
+        linear-gradient(rgba(12, 182, 255, .03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(12, 182, 255, .03) 1px, transparent 1px);
       background-size: 34px 34px;
+    }
+
+    body.bg-solid {
+      background: var(--solid-bg);
+    }
+
+    body.bg-gradient {
+      background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2), var(--gradient-3));
+      background-size: 300% 300%;
+      animation: movingGradient 18s ease infinite;
+    }
+
+    body.bg-image {
+      background:
+        linear-gradient(rgba(0, 6, 20, .46), rgba(0, 6, 20, .55)),
+        var(--custom-image);
+      background-position: center;
+      background-size: cover;
+      background-attachment: fixed;
+    }
+
+    @keyframes movingGradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     button,
@@ -68,294 +94,329 @@
 
     button {
       cursor: pointer;
-    }
-
-    /* Background customisation */
-    body.bg-color {
-      background: var(--custom-bg, #020617);
-    }
-
-    body.bg-gradient {
-      background:
-        linear-gradient(135deg, var(--gradient-1), var(--gradient-2), var(--gradient-3));
-      background-size: 300% 300%;
-      animation: gradientMove 18s ease infinite;
-    }
-
-    body.bg-image {
-      background:
-        linear-gradient(rgba(0, 8, 25, .45), rgba(0, 8, 25, .45)),
-        var(--custom-image);
-      background-position: center;
-      background-size: cover;
-      background-attachment: fixed;
-    }
-
-    @keyframes gradientMove {
-      0% { background-position: 0 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0 50%; }
-    }
-
-    /* Layout */
-    .app-layout {
-      display: flex;
-      min-height: 100vh;
-    }
-
-    .left-sidebar {
-      width: 225px;
-      min-width: 225px;
-      min-height: 100vh;
-      position: fixed;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      z-index: 50;
-      overflow-y: auto;
-      padding: 18px 11px;
-      background: linear-gradient(180deg, rgba(2, 9, 26, .98), rgba(4, 16, 40, .96));
-      border-right: 1px solid rgba(0, 183, 255, .34);
-      box-shadow: 8px 0 30px rgba(0, 123, 255, .12);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 8px 20px;
-      margin-bottom: 10px;
-      border-bottom: 1px solid rgba(0, 183, 255, .18);
-    }
-
-    .brand-logo {
-      font-size: 1.8rem;
-      filter: drop-shadow(0 0 10px #00b7ff);
-    }
-
-    .brand-name {
-      font-size: 1.2rem;
-      font-weight: 900;
-      letter-spacing: 2px;
-      color: #fff;
-      text-shadow: 0 0 12px rgba(0, 183, 255, .8);
-    }
-
-    .brand-subtitle {
-      color: #7eb9e8;
-      font-size: .57rem;
-      letter-spacing: 1.4px;
-      margin-top: 3px;
-    }
-
-    .side-nav {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    .nav-btn {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid transparent;
-      border-radius: 9px;
-      color: #a8bddb;
-      background: transparent;
-      text-align: left;
-      transition: .18s ease;
-    }
-
-    .nav-btn:hover {
-      color: #fff;
-      background: rgba(0, 183, 255, .1);
-      border-color: rgba(0, 183, 255, .3);
-      box-shadow: 0 0 13px rgba(0, 183, 255, .14);
-    }
-
-    .nav-btn.active {
-      color: #fff;
-      background: linear-gradient(90deg, rgba(0, 165, 255, .28), rgba(102, 65, 255, .22));
-      border-color: rgba(0, 183, 255, .75);
-      box-shadow: 0 0 16px rgba(0, 183, 255, .25);
-    }
-
-    .main-content {
-      width: calc(100% - 225px);
-      min-height: 100vh;
-      margin-left: 225px;
-      padding: 20px;
-    }
-
-    .dashboard-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 15px;
-      margin-bottom: 18px;
-      padding: 15px 18px;
-      border: 1px solid var(--border);
-      border-radius: 13px;
-      background: linear-gradient(135deg, rgba(5, 24, 60, .92), rgba(27, 18, 75, .8));
-      box-shadow: 0 0 22px rgba(0, 145, 255, .13);
-    }
-
-    .dashboard-title {
-      font-size: 1.45rem;
-      font-weight: 900;
-      letter-spacing: 3px;
-      text-shadow: 0 0 14px rgba(0, 183, 255, .8);
-    }
-
-    .dashboard-subtitle {
-      color: #86c4ed;
-      font-size: .65rem;
-      letter-spacing: 2px;
-      margin-top: 3px;
-    }
-
-    .system-online {
-      color: var(--green);
-      font-size: .75rem;
-      white-space: nowrap;
-    }
-
-    .system-online::before {
-      content: "";
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      margin-right: 6px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 10px var(--green);
-    }
-
-    section {
-      display: none;
-      padding: 20px;
-      margin-bottom: 18px;
-      border: 1px solid rgba(0, 183, 255, .34);
-      border-radius: 13px;
-      background: linear-gradient(145deg, rgba(8, 25, 58, .91), rgba(3, 12, 30, .91));
-      box-shadow: 0 14px 36px rgba(0, 0, 0, .28);
-      backdrop-filter: blur(8px);
-    }
-
-    section.active {
-      display: block;
-    }
-
-    h2 {
-      margin-top: 0;
-      font-size: 1.65rem;
-      text-shadow: 0 0 12px rgba(0, 183, 255, .24);
-    }
-
-    h3,
-    h4 {
-      color: #edf8ff;
-    }
-
-    p,
-    li {
-      line-height: 1.5;
-    }
-
-    /* Buttons and inputs */
-    button {
-      transition: .16s ease;
+      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
     }
 
     button:hover {
       transform: translateY(-1px);
-      box-shadow: 0 0 14px rgba(0, 183, 255, .24);
+      box-shadow: 0 0 16px rgba(20, 184, 255, .25);
     }
 
     input,
     select {
-      color: #edf8ff !important;
-      background: rgba(2, 10, 27, .95) !important;
-      border-color: rgba(0, 183, 255, .38) !important;
+      width: 100%;
+      color: var(--text);
+      border: 1px solid rgba(54, 183, 255, .35);
+      border-radius: 7px;
+      outline: none;
+      background: rgba(1, 10, 29, .92);
     }
 
     input:focus,
     select:focus {
-      outline: none;
-      border-color: var(--blue-light) !important;
-      box-shadow: 0 0 0 2px rgba(0, 183, 255, .15);
+      border-color: #8ce7ff;
+      box-shadow: 0 0 0 2px rgba(20, 184, 255, .15);
     }
 
-    /* Auth */
-    .auth-overlay {
+    /* ---------------- Top header ---------------- */
+
+    .topbar {
+      height: 58px;
       position: fixed;
-      inset: 0;
-      z-index: 9999;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 90;
       display: flex;
       align-items: center;
-      justify-content: center;
-      padding: 16px;
-      background: rgba(1, 5, 18, .93);
+      gap: 18px;
+      padding: 0 18px;
+      border-bottom: 1px solid rgba(47, 182, 255, .38);
+      background:
+        radial-gradient(circle at 9% 50%, rgba(0, 170, 255, .26), transparent 22%),
+        linear-gradient(90deg, rgba(2, 11, 31, .98), rgba(8, 30, 75, .97), rgba(7, 11, 38, .98));
+      box-shadow: 0 4px 20px rgba(0, 92, 180, .18);
     }
 
-    .auth-overlay.hidden {
+    .topbar-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+      font-weight: 900;
+      letter-spacing: 1.8px;
+      text-shadow: 0 0 12px rgba(22, 191, 255, .88);
+    }
+
+    .topbar-logo-mark {
+      font-size: 1.6rem;
+      filter: drop-shadow(0 0 8px #14b8ff);
+    }
+
+    .topbar-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: #92b8df;
+      font-size: .72rem;
+      letter-spacing: .6px;
+    }
+
+    .topbar-links span {
+      cursor: default;
+    }
+
+    .topbar-status {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-left: auto;
+      color: #a9d6f4;
+      font-size: .72rem;
+    }
+
+    .status-online {
+      color: #47f3aa;
+    }
+
+    .status-online::before {
+      content: "";
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      margin-right: 5px;
+      border-radius: 50%;
+      background: #47f3aa;
+      box-shadow: 0 0 9px #47f3aa;
+    }
+
+    /* ---------------- Icon rail ---------------- */
+
+    .sidebar {
+      position: fixed;
+      top: 58px;
+      bottom: 0;
+      left: 0;
+      z-index: 70;
+      width: 68px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 14px 10px;
+      overflow-y: auto;
+      border-right: 1px solid rgba(44, 178, 255, .3);
+      background: linear-gradient(180deg, rgba(2, 11, 30, .98), rgba(3, 14, 38, .95));
+    }
+
+    .sidebar button {
+      width: 48px;
+      min-height: 46px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      color: #9bbbd9;
+      background: transparent;
+      font-size: 1.24rem;
+    }
+
+    .sidebar button:hover {
+      color: #fff;
+      border-color: rgba(24, 187, 255, .38);
+      background: rgba(20, 184, 255, .11);
+    }
+
+    .sidebar button.active {
+      color: #fff;
+      border-color: rgba(25, 190, 255, .85);
+      background: linear-gradient(135deg, rgba(0, 176, 255, .34), rgba(102, 68, 255, .24));
+      box-shadow: 0 0 15px rgba(0, 174, 255, .28);
+    }
+
+    .sidebar button span {
+      display: block;
+      margin-top: 2px;
+      font-size: .53rem;
+      letter-spacing: .2px;
+    }
+
+    /* ---------------- Main ---------------- */
+
+    .app-main {
+      min-height: 100vh;
+      padding: 76px 18px 22px 88px;
+    }
+
+    .page {
       display: none;
-    }
-
-    .auth-box {
       width: 100%;
-      max-width: 390px;
-      padding: 24px 21px;
-      border: 1px solid rgba(0, 183, 255, .5);
-      border-radius: 14px;
-      background: linear-gradient(145deg, rgba(8, 30, 68, .98), rgba(3, 12, 31, .98));
-      box-shadow: 0 0 36px rgba(0, 149, 255, .25), 0 20px 60px #000;
+      max-width: 1600px;
+      margin: 0 auto;
     }
 
-    /* Reusable panels */
-    .dark-panel,
-    #move-list,
-    #openings-list,
-    #conversations-panel,
-    #chat-panel,
-    #ai-chat,
-    #msg-preview,
-    #instruments-list,
-    #instruments-content,
-    #sports-list,
-    #sports-content,
-    #study-list,
-    #study-content {
-      background: linear-gradient(145deg, rgba(4, 18, 44, .96), rgba(2, 9, 24, .96)) !important;
-      border-color: rgba(0, 183, 255, .31) !important;
+    .page.active {
+      display: block;
     }
 
-    .convo-item {
-      padding: 10px;
-      border-bottom: 1px solid rgba(0, 183, 255, .11);
-      cursor: pointer;
-      transition: .16s ease;
+    .page-head {
+      margin-bottom: 14px;
     }
 
-    .convo-item:hover {
-      background: rgba(0, 183, 255, .1);
+    .page-head h1 {
+      margin: 0;
+      font-size: 1.4rem;
+      text-shadow: 0 0 11px rgba(12, 185, 255, .35);
     }
 
-    .convo-item.active {
-      background: linear-gradient(90deg, rgba(0, 183, 255, .25), rgba(122, 58, 255, .2)) !important;
-      border-left: 3px solid var(--blue-light);
+    .page-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: .86rem;
     }
 
-    /* Chess */
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: linear-gradient(145deg, rgba(7, 24, 57, .93), rgba(3, 12, 32, .94));
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .23), inset 0 0 18px rgba(0, 147, 255, .035);
+    }
+
+    .card-pad {
+      padding: 14px;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .btn {
+      padding: 8px 11px;
+      border: 1px solid rgba(46, 182, 255, .44);
+      border-radius: 7px;
+      color: #dff4ff;
+      background: rgba(7, 31, 73, .96);
+    }
+
+    .btn-primary {
+      border-color: rgba(112, 219, 255, .75);
+      background: linear-gradient(135deg, #0a8edc, #5748e7);
+      color: #fff;
+    }
+
+    .btn-danger {
+      border-color: rgba(255, 98, 116, .56);
+      background: rgba(91, 18, 36, .7);
+      color: #ffd9df;
+    }
+
+    /* ---------------- Chess ---------------- */
+
+    .chess-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 270px;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .chess-main-card {
+      min-width: 0;
+      padding: 14px;
+    }
+
+    .chess-main-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .chess-main-header h2 {
+      margin: 0;
+      font-size: 1.08rem;
+    }
+
+    .chess-main-header span {
+      color: var(--muted);
+      font-size: .76rem;
+    }
+
+    .chess-workspace {
+      display: grid;
+      grid-template-columns: minmax(300px, 1fr) minmax(210px, 260px);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .player-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 9px;
+      padding: 8px 10px;
+      border: 1px solid rgba(37, 173, 255, .32);
+      background: rgba(1, 12, 34, .95);
+    }
+
+    .player-top {
+      border-radius: 8px 8px 0 0;
+    }
+
+    .player-bottom {
+      border-radius: 0 0 8px 8px;
+    }
+
+    .player-name {
+      font-weight: 700;
+      font-size: .86rem;
+    }
+
+    .player-rating {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: .67rem;
+    }
+
+    .clock {
+      min-width: 60px;
+      padding: 4px 7px;
+      border: 1px solid rgba(52, 185, 255, .36);
+      border-radius: 5px;
+      font-family: monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      text-align: center;
+      background: rgba(0, 70, 119, .24);
+    }
+
+    #clock-black {
+      color: #ff8794;
+    }
+
+    #clock-white {
+      color: #55f5ac;
+    }
+
+    .board-shell {
+      width: min(100%, 560px);
+      margin: 0 auto;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      border: 2px solid rgba(40, 190, 255, .76);
+      border-radius: 4px;
+      box-shadow: 0 0 24px rgba(0, 169, 255, .3), 0 14px 36px rgba(0, 0, 0, .46);
+    }
+
     #board {
       width: 100%;
-      aspect-ratio: 1 / 1;
-      max-width: 560px;
-      margin: 0 auto;
-      overflow: hidden;
-      border: 2px solid rgba(0, 183, 255, .65) !important;
-      border-radius: 6px !important;
-      background: #000;
-      box-shadow: 0 0 24px rgba(0, 168, 255, .3), 0 15px 38px rgba(0, 0, 0, .5);
+      height: 100%;
+    }
+
+    .chess-board {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      grid-template-rows: repeat(8, 1fr);
     }
 
     .chess-square {
@@ -367,14 +428,6 @@
       user-select: none;
     }
 
-    .chess-board {
-      width: 100%;
-      height: 100%;
-      display: grid;
-      grid-template-columns: repeat(8, 1fr);
-      grid-template-rows: repeat(8, 1fr);
-    }
-
     .chess-square.light {
       background: var(--board-light);
     }
@@ -383,31 +436,19 @@
       background: var(--board-dark);
     }
 
-    .chess-piece {
-      font-family: "Segoe UI Symbol", "DejaVu Sans", serif;
-      font-size: clamp(25px, 7vw, 58px);
-      line-height: 1;
-      pointer-events: none;
-      text-shadow: 0 2px 3px rgba(0, 0, 0, .7);
-    }
-
-    .white-piece {
-      color: #fff;
-    }
-
-    .black-piece {
-      color: #111;
-    }
-
     .chess-square.selected {
-      box-shadow: inset 0 0 0 5px rgba(255, 238, 0, .65);
+      box-shadow: inset 0 0 0 4px rgba(255, 241, 63, .75);
+    }
+
+    .chess-square.last-move {
+      filter: brightness(1.13) saturate(1.16);
     }
 
     .chess-square.legal::after {
       content: "";
+      position: absolute;
       width: 22%;
       height: 22%;
-      position: absolute;
       border-radius: 50%;
       background: rgba(0, 0, 0, .3);
     }
@@ -416,1329 +457,1605 @@
       content: "";
       position: absolute;
       inset: 10%;
-      border: 5px solid rgba(0, 0, 0, .35);
+      border: 4px solid rgba(0, 0, 0, .35);
       border-radius: 50%;
     }
 
-    .chess-square.last-move {
-      filter: brightness(1.12) saturate(1.25);
+    .chess-piece {
+      z-index: 2;
+      color: white;
+      font-family: "Segoe UI Symbol", "DejaVu Sans", serif;
+      font-size: clamp(22px, 5.7vw, 54px);
+      line-height: 1;
+      pointer-events: none;
+      text-shadow: 0 2px 3px rgba(0, 0, 0, .74);
     }
 
-    .chess-square.check {
-      background: #bb3b53 !important;
+    .chess-piece.black {
+      color: #111827;
     }
 
-    .chess-coord {
+    .coord {
       position: absolute;
-      z-index: 4;
+      z-index: 3;
       color: rgba(255, 255, 255, .8);
-      font-size: 10px;
+      font-size: 9px;
       font-weight: bold;
       pointer-events: none;
     }
 
-    .chess-file {
-      right: 4px;
+    .coord.file {
+      right: 3px;
       bottom: 2px;
     }
 
-    .chess-rank {
-      left: 4px;
+    .coord.rank {
       top: 2px;
+      left: 3px;
     }
 
-    .chess-info {
-      padding: 9px 12px;
+    .chess-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+    .chess-status {
+      margin-top: 9px;
       color: var(--muted);
-      font-size: .9rem;
+      font-size: .78rem;
     }
 
-    .clock {
-      min-width: 62px;
-      padding: 4px 8px;
-      border: 1px solid rgba(0, 183, 255, .34);
-      border-radius: 5px;
+    .moves-panel,
+    .openings-panel {
+      overflow: hidden;
+    }
+
+    .panel-title {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(43, 181, 255, .26);
+      font-size: .9rem;
+      font-weight: 700;
+    }
+
+    #move-list {
+      min-height: 180px;
+      max-height: 252px;
+      padding: 7px;
+      overflow-y: auto;
       font-family: monospace;
-      font-size: 1.1rem;
-      text-align: center;
-      text-shadow: 0 0 8px currentColor;
+      font-size: .82rem;
     }
 
     .move-row {
-      padding: 5px;
-      border-bottom: 1px solid rgba(0, 183, 255, .1);
-      font-family: monospace;
+      padding: 6px 5px;
+      border-radius: 4px;
     }
 
-    /* AI */
-    #ai-chat {
-      max-height: 360px;
+    .move-row:nth-child(even) {
+      background: rgba(21, 77, 139, .16);
+    }
+
+    .opening-search {
+      margin: 10px;
+      width: calc(100% - 20px);
+      padding: 8px;
+    }
+
+    #openings-list {
+      max-height: 260px;
+      overflow-y: auto;
+      padding: 0 8px 8px;
+    }
+
+    .opening-row {
+      padding: 8px;
+      border-bottom: 1px solid rgba(41, 177, 255, .12);
+    }
+
+    .opening-row strong {
+      font-size: .8rem;
+    }
+
+    .opening-row div {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: .69rem;
+    }
+
+    .chess-side {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .theme-card {
+      padding: 12px;
+    }
+
+    .theme-card h3 {
+      margin: 0 0 10px;
+      font-size: .9rem;
+    }
+
+    .theme-section-title {
+      margin: 13px 0 7px;
+      color: #b6dcf6;
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+    }
+
+    .theme-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+    }
+
+    .theme-option {
+      min-height: 54px;
+      padding: 6px;
+      border: 1px solid rgba(37, 181, 255, .25);
+      border-radius: 7px;
+      color: #cdeaff;
+      background: rgba(4, 20, 50, .85);
+      font-size: .6rem;
+    }
+
+    .theme-option.active {
+      border-color: rgba(47, 199, 255, .94);
+      box-shadow: inset 0 0 12px rgba(0, 181, 255, .16), 0 0 9px rgba(0, 181, 255, .2);
+    }
+
+    .theme-preview {
+      height: 26px;
+      margin-bottom: 4px;
+      border-radius: 4px;
+      background: linear-gradient(135deg, #0b5f9d, #24155e);
+    }
+
+    .theme-preview.purple { background: linear-gradient(135deg, #4d2479, #b149e4); }
+    .theme-preview.green { background: linear-gradient(135deg, #0a5d4a, #3aff9a); }
+    .theme-preview.red { background: linear-gradient(135deg, #5d1e32, #ff5964); }
+    .theme-preview.orange { background: linear-gradient(135deg, #68431a, #ffb649); }
+    .theme-preview.black { background: linear-gradient(135deg, #090b14, #536174); }
+
+    .colour-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 8px 0;
+      color: var(--muted);
+      font-size: .72rem;
+    }
+
+    .colour-row input {
+      width: 36px;
+      height: 27px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    .range {
+      accent-color: var(--accent);
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: .72rem;
+    }
+
+    /* ---------------- General pages ---------------- */
+
+    .two-column-layout {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
+      gap: 14px;
+      min-height: 430px;
+    }
+
+    .selection-list {
+      max-height: 580px;
       overflow-y: auto;
     }
 
-    .msg-bubble {
-      display: inline-block;
-      max-width: 100%;
-      padding: 8px 12px;
-      border: 1px solid rgba(0, 183, 255, .18);
-      border-radius: 12px;
-      color: #fff;
-      word-wrap: break-word;
+    .selection-item {
+      width: 100%;
+      padding: 11px;
+      border: 0;
+      border-bottom: 1px solid rgba(44, 178, 255, .13);
+      border-radius: 0;
+      color: #d3edff;
+      background: transparent;
+      text-align: left;
     }
 
-    .msg-bubble.style-normal {
-      font-weight: 400;
-      font-style: normal;
+    .selection-item:hover,
+    .selection-item.active {
+      background: linear-gradient(90deg, rgba(0, 178, 255, .22), rgba(112, 68, 255, .16));
+      box-shadow: none;
     }
 
-    .msg-bubble.style-bold {
-      font-weight: 700;
-    }
-
-    .msg-bubble.style-italic {
-      font-style: italic;
-    }
-
-    .msg-bubble.style-bold-italic {
-      font-weight: 700;
-      font-style: italic;
-    }
-
-    /* Lists */
-    #instruments-list,
-    #sports-list,
-    #study-list {
-      width: 220px;
-      min-width: 220px;
-      max-height: 520px;
+    .selection-content {
+      padding: 18px;
       overflow-y: auto;
-      border: 1px solid #444;
-      border-radius: 8px;
     }
 
-    #instruments-content,
-    #sports-content,
-    #study-content {
-      flex: 1;
+    .selection-content h3 {
+      margin-top: 0;
+    }
+
+    .selection-content h4 {
+      margin-bottom: 6px;
+      color: #bfeaff;
+    }
+
+    .selection-content li {
+      margin: 5px 0;
+      color: #d3e7f8;
+    }
+
+    .chat-layout {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
+      gap: 14px;
+      min-height: 440px;
+    }
+
+    #conversations-panel {
+      overflow-y: auto;
+    }
+
+    #chat-panel {
+      display: flex;
+      flex-direction: column;
       min-width: 0;
-      max-height: 620px;
+    }
+
+    #chat-messages {
+      flex: 1;
+      min-height: 350px;
+      max-height: 480px;
+      padding: 12px;
       overflow-y: auto;
-      border: 1px solid #444;
-      border-radius: 8px;
+    }
+
+    .chat-line {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      max-width: 82%;
+      margin-bottom: 8px;
+    }
+
+    .chat-line.self {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+
+    .chat-line.other {
+      align-self: flex-start;
+    }
+
+    .chat-sender {
+      color: var(--muted);
+      font-size: .68rem;
+    }
+
+    .message-bubble {
+      padding: 8px 11px;
+      border: 1px solid rgba(38, 184, 255, .17);
+      border-radius: 11px;
+      color: white;
+    }
+
+    .chat-compose,
+    .ai-compose {
+      display: flex;
+      gap: 8px;
+      padding: 10px;
+      border-top: 1px solid rgba(41, 179, 255, .22);
+    }
+
+    .chat-compose input,
+    .ai-compose input {
+      min-width: 0;
+      padding: 9px;
+    }
+
+    #ai-chat {
+      min-height: 300px;
+      max-height: 440px;
+      padding: 12px;
+      overflow-y: auto;
+    }
+
+    .ai-message {
+      margin-bottom: 9px;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(180px, 1fr));
+      gap: 14px;
+    }
+
+    .setting-block {
+      padding: 13px;
+    }
+
+    .setting-block label {
+      display: block;
+      margin-bottom: 6px;
+      color: #d9efff;
+      font-size: .8rem;
+      font-weight: 700;
+    }
+
+    .setting-block input[type="color"] {
+      height: 42px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    .settings-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 13px;
+    }
+
+    .background-preview {
+      min-height: 100px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+    }
+
+    .simple-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+    }
+
+    .simple-grid .card {
       padding: 16px;
     }
 
-    /* Mobile */
-    @media (max-width: 900px) {
-      .left-sidebar {
-        position: relative;
-        width: 100%;
-        min-width: 100%;
-        min-height: auto;
-        border-right: 0;
-        border-bottom: 1px solid rgba(0, 183, 255, .35);
+    /* ---------------- Auth ---------------- */
+
+    .auth-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: rgba(1, 5, 18, .94);
+      backdrop-filter: blur(6px);
+    }
+
+    .auth-overlay.hidden {
+      display: none !important;
+    }
+
+    .auth-box {
+      width: min(100%, 390px);
+      padding: 23px;
+      border: 1px solid rgba(42, 187, 255, .6);
+      border-radius: 14px;
+      background: linear-gradient(145deg, rgba(7, 29, 69, .99), rgba(3, 11, 30, .99));
+      box-shadow: 0 0 36px rgba(0, 162, 255, .26), 0 20px 70px rgba(0, 0, 0, .75);
+    }
+
+    .auth-box h2 {
+      margin-top: 0;
+    }
+
+    .auth-box input {
+      margin: 5px 0;
+      padding: 11px;
+    }
+
+    .auth-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 7px;
+    }
+
+    .auth-row button {
+      flex: 1;
+    }
+
+    .auth-message {
+      min-height: 18px;
+      margin-top: 10px;
+      color: #ff8c98;
+      font-size: .8rem;
+    }
+
+    /* ---------------- Mobile ---------------- */
+
+    @media (max-width: 1120px) {
+      .chess-layout {
+        grid-template-columns: 1fr;
       }
 
-      .main-content {
-        width: 100%;
-        margin-left: 0;
-        padding: 12px;
-      }
-
-      .app-layout {
-        display: block;
-      }
-
-      .side-nav {
+      .chess-side {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: minmax(0, 1fr) minmax(230px, 300px);
+        align-items: start;
+      }
+
+      .theme-card {
+        grid-row: span 2;
       }
     }
 
-    @media (max-width: 620px) {
-      section {
-        padding: 13px;
+    @media (max-width: 820px) {
+      .topbar-links {
+        display: none;
       }
 
-      .dashboard-header {
-        align-items: flex-start;
-        flex-direction: column;
+      .topbar-status .status-online {
+        display: none;
       }
 
-      #instruments-list,
-      #sports-list,
-      #study-list {
+      .sidebar {
+        top: auto;
         width: 100%;
-        min-width: 0;
-        max-height: 220px;
+        height: 66px;
+        bottom: 0;
+        right: 0;
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: 8px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        border-top: 1px solid rgba(44, 178, 255, .3);
+        border-right: 0;
       }
 
-      #instruments-content,
-      #sports-content,
-      #study-content {
+      .sidebar button {
+        flex: 0 0 53px;
+        width: 53px;
+        min-height: 47px;
+      }
+
+      .app-main {
+        padding: 74px 12px 82px;
+      }
+
+      .chess-workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .chess-side {
+        display: flex;
+      }
+
+      .two-column-layout,
+      .chat-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .selection-list {
+        display: flex;
         max-height: none;
+        overflow-x: auto;
+        overflow-y: hidden;
       }
 
-      section > div[style*="min-height:420px"] {
-        flex-direction: column !important;
+      .selection-item {
+        flex: 0 0 auto;
+        min-width: 136px;
+        border-right: 1px solid rgba(44, 178, 255, .13);
+        border-bottom: 0;
+      }
+
+      #conversations-panel {
+        display: flex;
+        max-height: 85px;
+        overflow-x: auto;
+        overflow-y: hidden;
+      }
+
+      #conversations-panel .conversation {
+        flex: 0 0 140px;
+      }
+
+      .settings-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .topbar {
+        padding: 0 12px;
+      }
+
+      .topbar-status {
+        gap: 7px;
+        font-size: .65rem;
+      }
+
+      .topbar-time {
+        display: none;
+      }
+
+      .app-main {
+        padding-left: 9px;
+        padding-right: 9px;
+      }
+
+      .page-head h1 {
+        font-size: 1.2rem;
+      }
+
+      .chess-main-card {
+        padding: 10px;
+      }
+
+      .chess-controls .btn {
+        flex: 1 1 42%;
+      }
+
+      .player-name {
+        font-size: .76rem;
+      }
+
+      .clock {
+        min-width: 55px;
+        font-size: .9rem;
       }
     }
   </style>
 </head>
 
 <body>
+  <!-- Auth -->
   <div id="auth-overlay" class="auth-overlay">
     <div class="auth-box">
       <h2>Welcome to Cyclone</h2>
-      <p style="color:#a8bddb;">
-        Log in, create an account, or continue as a guest.
-      </p>
+      <p class="muted">Log in, create an account, or continue as a guest.</p>
 
-      <form id="auth-form" style="display:flex;flex-direction:column;gap:10px;">
-        <input id="auth-username" type="text" placeholder="Username" required style="padding:10px;border-radius:6px;">
-        <input id="auth-password" type="password" placeholder="Password" required style="padding:10px;border-radius:6px;">
+      <input id="auth-username" type="text" placeholder="Username" autocomplete="username">
+      <input id="auth-password" type="password" placeholder="Password" autocomplete="current-password">
 
-        <div style="display:flex;gap:8px;">
-          <button type="button" id="btn-login" style="flex:1;padding:10px;border:0;border-radius:6px;background:#087ed3;color:#fff;">
-            Log in
-          </button>
-          <button type="button" id="btn-signup" style="flex:1;padding:10px;border:0;border-radius:6px;background:#5b42e8;color:#fff;">
-            Create account
-          </button>
-        </div>
+      <div class="auth-row">
+        <button type="button" class="btn btn-primary" onclick="cycloneLogin(false)">Log in</button>
+        <button type="button" class="btn btn-primary" onclick="cycloneLogin(false)">Create account</button>
+      </div>
 
-        <button type="button" id="btn-guest" style="padding:10px;border:1px solid #267ac0;border-radius:6px;background:transparent;color:#d9efff;">
-          Continue as Guest
-        </button>
-      </form>
+      <button type="button" class="btn" style="width:100%;margin-top:8px;" onclick="cycloneLogin(true)">
+        Continue as Guest
+      </button>
 
-      <div id="auth-message" style="margin-top:10px;color:#ff8995;"></div>
+      <div id="auth-message" class="auth-message"></div>
     </div>
   </div>
 
-  <div class="app-layout">
-    <aside class="left-sidebar">
-      <div class="brand">
-        <div class="brand-logo">⚡</div>
-        <div>
-          <div class="brand-name">CYCLONE</div>
-          <div class="brand-subtitle">PLAY • LEARN • CREATE</div>
-        </div>
+  <!-- Top header -->
+  <header class="topbar">
+    <div class="topbar-logo">
+      <span class="topbar-logo-mark">⚡</span>
+      <span>CYCLONE</span>
+    </div>
+
+    <div class="topbar-links">
+      <span>PLAY</span>
+      <span>LEARN</span>
+      <span>CONNECT</span>
+      <span>EXPLORE</span>
+    </div>
+
+    <div class="topbar-status">
+      <span class="topbar-time" id="header-time">--:--</span>
+      <span class="status-online">ONLINE</span>
+      <span>◉</span>
+    </div>
+  </header>
+
+  <!-- Responsive icon navigation -->
+  <nav class="sidebar">
+    <button class="nav-btn active" data-page="home">⌂<span>Home</span></button>
+    <button class="nav-btn" data-page="chess">♟<span>Chess</span></button>
+    <button class="nav-btn" data-page="chat">◉<span>Chat</span></button>
+    <button class="nav-btn" data-page="ai">✦<span>AI</span></button>
+    <button class="nav-btn" data-page="learn">▣<span>Learn</span></button>
+    <button class="nav-btn" data-page="instruments">♫<span>Music</span></button>
+    <button class="nav-btn" data-page="sports">★<span>Sports</span></button>
+    <button class="nav-btn" data-page="profile">◌<span>Profile</span></button>
+  </nav>
+
+  <main class="app-main">
+    <!-- Home -->
+    <section class="page active" id="page-home">
+      <div class="page-head">
+        <h1>Welcome to Cyclone</h1>
+        <p>Play, learn, build skills, and customize everything your way.</p>
       </div>
 
-      <nav class="side-nav">
-        <button class="nav-btn active" data-tab="feed">🏠 Feed</button>
-        <button class="nav-btn" data-tab="chess">♟️ Chess</button>
-        <button class="nav-btn" data-tab="chat">💬 Chat</button>
-        <button class="nav-btn" data-tab="ai">🤖 Cyclone AI</button>
-        <button class="nav-btn" data-tab="profile">👤 Profile</button>
-        <button class="nav-btn" data-tab="firstaid">🩹 First Aid</button>
-        <button class="nav-btn" data-tab="instruments">🎸 Instruments</button>
-        <button class="nav-btn" data-tab="music">🎵 Music</button>
-        <button class="nav-btn" data-tab="sports">🏅 Sports</button>
-        <button class="nav-btn" data-tab="study">📚 Study</button>
-        <button class="nav-btn" data-tab="art">🎨 Art</button>
-        <button class="nav-btn" data-tab="code">💻 Code</button>
-        <button class="nav-btn" data-tab="games">🎮 Games</button>
-      </nav>
-    </aside>
-
-    <main class="main-content">
-      <div class="dashboard-header">
-        <div>
-          <div class="dashboard-title">CYCLONE</div>
-          <div class="dashboard-subtitle">PLAY • LEARN • CREATE</div>
+      <div class="simple-grid">
+        <div class="card">
+          <h3>♟ Chess</h3>
+          <p class="muted">Play a local game against the Cyclone chess bot.</p>
+          <button class="btn btn-primary" onclick="showPage('chess')">Open Chess</button>
         </div>
-        <div class="system-online">SYSTEM ONLINE</div>
+
+        <div class="card">
+          <h3>✦ Cyclone AI</h3>
+          <p class="muted">Ask questions, chat casually, and get the current time.</p>
+          <button class="btn btn-primary" onclick="showPage('ai')">Open AI</button>
+        </div>
+
+        <div class="card">
+          <h3>▣ Learn</h3>
+          <p class="muted">Maths, English, languages, science, coding, and more.</p>
+          <button class="btn btn-primary" onclick="showPage('learn')">Start Learning</button>
+        </div>
+
+        <div class="card">
+          <h3>★ Sports</h3>
+          <p class="muted">Rules, how to play, routines, and beginner tips.</p>
+          <button class="btn btn-primary" onclick="showPage('sports')">Explore Sports</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chess -->
+    <section class="page" id="page-chess">
+      <div class="page-head">
+        <h1>Chess</h1>
+        <p>Play against Cyclone Bot, customise your board, and explore openings.</p>
       </div>
 
-      <section id="feed" class="active">
-        <h2>🏠 Feed</h2>
-        <p>Posts, updates, and community content will appear here.</p>
-      </section>
-
-      <section id="chess">
-        <h2>♟️ Chess</h2>
-
-        <div class="chess-container" style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;">
-          <div style="flex:1 1 420px;min-width:280px;max-width:560px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 11px;background:rgba(3,14,34,.95);border:1px solid var(--border);border-radius:8px 8px 0 0;">
-              <strong>Opponent <span style="font-size:.7rem;color:var(--blue-light);">AI</span></strong>
-              <div id="clock-black" class="clock" style="color:var(--red);">10:00</div>
+      <div class="chess-layout">
+        <div class="card chess-main-card">
+          <div class="chess-main-header">
+            <div>
+              <h2>♟ Chess Arena</h2>
+              <span>Local game · AI opponent</span>
             </div>
+            <span id="chess-opening-label">Opening: -</span>
+          </div>
 
-            <div id="board"></div>
-
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 11px;background:rgba(3,14,34,.95);border:1px solid var(--border);border-radius:0 0 8px 8px;">
-              <strong>You <span style="font-size:.7rem;color:var(--green);">HUMAN</span></strong>
-              <div id="clock-white" class="clock" style="color:var(--green);">10:00</div>
-            </div>
-
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
-              <button id="new-game-btn" style="padding:9px 12px;border:0;border-radius:6px;background:#087ed3;color:#fff;">New Game</button>
-              <button id="flip-board-btn" style="padding:9px 12px;border:0;border-radius:6px;background:#126ce0;color:#fff;">Flip Board</button>
-              <button id="copy-fen-btn" style="padding:9px 12px;border:1px solid var(--border);border-radius:6px;background:#071832;color:#d9efff;">Copy FEN</button>
-              <button id="toggle-ai-btn" style="padding:9px 12px;border:1px solid var(--border);border-radius:6px;background:#071832;color:#d9efff;">AI: On</button>
-            </div>
-
-            <div class="chess-info">
-              Turn: <span id="turn-indicator">White</span> |
-              Status: <span id="game-status">Playing</span> |
-              Opening: <span id="opening-name">-</span>
-            </div>
-
-            <div class="dark-panel" style="margin-top:14px;padding:12px;border-radius:9px;border:1px solid var(--border);">
-              <strong>Board colours</strong>
-
-              <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;">
-                <label style="flex:1;min-width:130px;">
-                  Light squares
-                  <input id="board-light-color" type="color" value="#d8e9f5" style="width:100%;height:36px;">
-                </label>
-
-                <label style="flex:1;min-width:130px;">
-                  Dark squares
-                  <input id="board-dark-color" type="color" value="#3675a8" style="width:100%;height:36px;">
-                </label>
+          <div class="chess-workspace">
+            <div>
+              <div class="player-bar player-top">
+                <div>
+                  <div class="player-name">Cyclone Bot <span style="color:#8ddfff;font-size:.66rem;">AI</span></div>
+                  <span class="player-rating">Rating 1500</span>
+                </div>
+                <div class="clock" id="clock-black">10:00</div>
               </div>
 
-              <button id="save-board-colors" style="margin-top:10px;padding:8px 12px;border:0;border-radius:6px;background:#5b42e8;color:#fff;">
-                Save board colours
+              <div class="board-shell">
+                <div id="board"></div>
+              </div>
+
+              <div class="player-bar player-bottom">
+                <div>
+                  <div class="player-name">You <span style="color:#55f5ac;font-size:.66rem;">HUMAN</span></div>
+                  <span class="player-rating">Rating 1500</span>
+                </div>
+                <div class="clock" id="clock-white">10:00</div>
+              </div>
+
+              <div class="chess-controls">
+                <button class="btn btn-primary" id="new-game-btn">New Game</button>
+                <button class="btn" id="flip-board-btn">Flip Board</button>
+                <button class="btn" id="copy-fen-btn">Copy FEN</button>
+                <button class="btn" id="toggle-ai-btn">AI: On</button>
+              </div>
+
+              <div class="chess-status">
+                Turn: <span id="turn-indicator">White</span> ·
+                Status: <span id="game-status">Playing</span>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div class="card moves-panel">
+                <div class="panel-title">Moves</div>
+                <div id="move-list"></div>
+              </div>
+
+              <div class="card openings-panel">
+                <div class="panel-title">Opening Explorer</div>
+                <input id="opening-search" class="opening-search" placeholder="Search openings...">
+                <div id="openings-list"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="chess-side">
+          <div class="card theme-card">
+            <h3>Theme & Customization</h3>
+
+            <div class="theme-section-title">Theme</div>
+            <div class="theme-options">
+              <button class="theme-option active" data-theme="blue">
+                <div class="theme-preview"></div>
+                Ocean Blue
               </button>
+              <button class="theme-option" data-theme="purple">
+                <div class="theme-preview purple"></div>
+                Neon Purple
+              </button>
+              <button class="theme-option" data-theme="green">
+                <div class="theme-preview green"></div>
+                Matrix
+              </button>
+              <button class="theme-option" data-theme="red">
+                <div class="theme-preview red"></div>
+                Crimson
+              </button>
+              <button class="theme-option" data-theme="orange">
+                <div class="theme-preview orange"></div>
+                Gold
+              </button>
+              <button class="theme-option" data-theme="black">
+                <div class="theme-preview black"></div>
+                Midnight
+              </button>
+            </div>
 
-              <span id="board-colors-saved" style="display:none;color:var(--green);margin-left:8px;">
-                Saved!
-              </span>
+            <div class="theme-section-title">Board colours</div>
+
+            <div class="colour-row">
+              <input id="board-light-color" type="color" value="#d7eaf8">
+              <span>Light squares</span>
+            </div>
+
+            <div class="colour-row">
+              <input id="board-dark-color" type="color" value="#3677aa">
+              <span>Dark squares</span>
+            </div>
+
+            <button class="btn btn-primary" id="save-board-colors" style="width:100%;margin-top:5px;">Save board colours</button>
+            <div id="board-colours-note" style="display:none;color:#55f5ac;text-align:center;font-size:.72rem;margin-top:6px;">Saved!</div>
+
+            <div class="theme-section-title">Board size</div>
+            <input id="board-size-range" class="range" type="range" min="280" max="620" value="520">
+
+            <div class="toggle-row">
+              <span>Show coordinates</span>
+              <input id="coords-toggle" type="checkbox" checked style="width:auto;">
             </div>
           </div>
 
-          <div style="flex:1 1 300px;min-width:260px;">
-            <h3>Moves</h3>
-            <div id="move-list" style="max-height:260px;overflow:auto;padding:10px;border:1px solid #444;border-radius:8px;"></div>
-
-            <h3 style="margin-top:18px;">Openings</h3>
-            <div id="openings-list" style="max-height:320px;overflow:auto;padding:8px;border:1px solid #444;border-radius:8px;"></div>
-          </div>
-        </div>
-      </section>
-
-      <section id="chat">
-        <h2>💬 Chat</h2>
-
-        <div style="display:flex;gap:10px;margin-bottom:12px;">
-          <button id="new-dm-btn" style="padding:9px 12px;border:1px solid var(--border);border-radius:6px;background:#071832;color:#d9efff;">+ New DM</button>
-          <button id="new-group-btn" style="padding:9px 12px;border:1px solid var(--border);border-radius:6px;background:#071832;color:#d9efff;">+ New Group</button>
-        </div>
-
-        <div style="display:flex;gap:14px;min-height:420px;">
-          <div id="conversations-panel" style="width:220px;overflow:auto;border:1px solid #444;border-radius:8px;">
-            <div style="padding:10px;color:#9eb2d0;">No conversations yet.</div>
-          </div>
-
-          <div id="chat-panel" style="flex:1;display:flex;flex-direction:column;border:1px solid #444;border-radius:8px;">
-            <div id="chat-messages" style="flex:1;padding:10px;overflow:auto;"></div>
-
-            <div style="display:flex;gap:8px;padding:10px;border-top:1px solid var(--border);">
-              <input id="chat-input" type="text" placeholder="Type a message…" style="flex:1;padding:9px;border-radius:6px;">
-              <button id="chat-send" style="padding:9px 14px;border:0;border-radius:6px;background:#087ed3;color:#fff;">Send</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="ai">
-        <h2>🤖 Cyclone AI</h2>
-
-        <div style="display:flex;gap:16px;flex-wrap:wrap;">
-          <div style="flex:2 1 300px;">
-            <div id="ai-chat" style="padding:10px;border:1px solid #444;border-radius:8px;">
-              <div><strong>Cyclone AI:</strong> Hey! What's up?</div>
-            </div>
-
-            <div style="display:flex;gap:8px;margin-top:9px;">
-              <input id="ai-input" type="text" placeholder="Talk to Cyclone AI…" style="flex:1;padding:9px;border-radius:6px;">
-              <button id="ai-send" style="padding:9px 14px;border:0;border-radius:6px;background:#087ed3;color:#fff;">Send</button>
-            </div>
-          </div>
-
-          <div class="dark-panel" style="flex:1 1 220px;padding:12px;border:1px solid var(--border);border-radius:8px;">
-            <h4>Quick tips</h4>
-            <ul style="color:#c4d6ee;">
-              <li>Control the centre.</li>
-              <li>Develop pieces early.</li>
-              <li>Castle for king safety.</li>
-              <li>Ask Cyclone anything.</li>
+          <div class="card card-pad">
+            <h3 style="margin-top:0;font-size:.95rem;">Quick chess tips</h3>
+            <ul style="padding-left:18px;margin:0;color:#bdd7ed;font-size:.77rem;">
+              <li>Control the centre early</li>
+              <li>Develop knights and bishops</li>
+              <li>Castle for king safety</li>
+              <li>Review your moves after playing</li>
             </ul>
           </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Chat -->
+    <section class="page" id="page-chat">
+      <div class="page-head">
+        <h1>Chat</h1>
+        <p>Local direct messages and group chat drafts.</p>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <button class="btn btn-primary" id="new-dm-btn">+ New DM</button>
+        <button class="btn" id="new-group-btn">+ New Group</button>
+      </div>
+
+      <div class="chat-layout">
+        <div class="card" id="conversations-panel"></div>
+
+        <div class="card" id="chat-panel">
+          <div id="chat-messages"></div>
+          <div class="chat-compose">
+            <input id="chat-input" placeholder="Type a message...">
+            <button class="btn btn-primary" id="chat-send">Send</button>
+          </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section id="profile">
-        <h2>👤 Profile</h2>
-        <p style="color:var(--muted);">Customize your Cyclone experience.</p>
+    <!-- AI -->
+    <section class="page" id="page-ai">
+      <div class="page-head">
+        <h1>Cyclone AI</h1>
+        <p>Ask something, say hi, or ask what time it is.</p>
+      </div>
 
-        <h3>💬 Message style</h3>
-
-        <div style="display:flex;flex-wrap:wrap;gap:15px;">
-          <label style="flex:1;min-width:180px;">
-            Bubble colour
-            <input id="msg-color" type="color" value="#087ed3" style="width:100%;height:42px;">
-          </label>
-
-          <label style="flex:1;min-width:180px;">
-            Text style
-            <select id="msg-style" style="width:100%;padding:10px;">
-              <option value="normal">Normal</option>
-              <option value="bold">Bold</option>
-              <option value="italic">Italic</option>
-              <option value="bold-italic">Bold + Italic</option>
-            </select>
-          </label>
-
-          <div style="flex:1;min-width:250px;">
-            Preview
-            <div id="msg-preview" style="margin-top:5px;padding:10px;border:1px solid #444;border-radius:8px;">
-              <span class="msg-bubble">This is a preview.</span>
-            </div>
+      <div class="card" style="max-width:950px;">
+        <div id="ai-chat">
+          <div class="ai-message">
+            <strong style="color:#ccedff;">Cyclone AI:</strong>
+            <span class="message-bubble" style="background:#234978;">Hey! What's up? I can help with chess, study, sports, music, or just chat.</span>
           </div>
         </div>
 
-        <button id="save-msg-style" style="margin-top:12px;padding:9px 13px;border:0;border-radius:6px;background:#5b42e8;color:#fff;">
-          Save message style
-        </button>
+        <div class="ai-compose">
+          <input id="ai-input" placeholder="Message Cyclone AI...">
+          <button class="btn btn-primary" id="ai-send">Send</button>
+        </div>
+      </div>
+    </section>
 
-        <span id="msg-saved-note" style="display:none;color:var(--green);margin-left:8px;">Saved!</span>
+    <!-- Learn -->
+    <section class="page" id="page-learn">
+      <div class="page-head">
+        <h1>Learning Hub</h1>
+        <p>Choose a subject for lessons, topic ideas, and practice plans.</p>
+      </div>
 
-        <h3 style="margin-top:28px;">🎨 Background settings</h3>
+      <div class="two-column-layout">
+        <div class="card selection-list" id="study-list"></div>
+        <div class="card selection-content" id="study-content">
+          <h3>Choose a subject</h3>
+          <p class="muted">Select a subject from the list to start learning.</p>
+        </div>
+      </div>
+    </section>
 
-        <label>
-          Background type
-          <select id="bg-type" style="width:100%;max-width:400px;padding:10px;margin-top:5px;">
-            <option value="color">Solid colour</option>
+    <!-- Instruments -->
+    <section class="page" id="page-instruments">
+      <div class="page-head">
+        <h1>Instruments</h1>
+        <p>Choose an instrument to see how to play, routines, and beginner tips.</p>
+      </div>
+
+      <div class="two-column-layout">
+        <div class="card selection-list" id="instrument-list"></div>
+        <div class="card selection-content" id="instrument-content">
+          <h3>Choose an instrument</h3>
+          <p class="muted">Select an instrument from the list to begin.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sports -->
+    <section class="page" id="page-sports">
+      <div class="page-head">
+        <h1>Sports</h1>
+        <p>Rules, how to play, beginner routines, and key skills.</p>
+      </div>
+
+      <div class="two-column-layout">
+        <div class="card selection-list" id="sports-list"></div>
+        <div class="card selection-content" id="sports-content">
+          <h3>Choose a sport</h3>
+          <p class="muted">Select a sport to see rules, drills, routines, and tips.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Profile -->
+    <section class="page" id="page-profile">
+      <div class="page-head">
+        <h1>Profile & Settings</h1>
+        <p>Change messages, themes, and your background.</p>
+      </div>
+
+      <div class="settings-grid">
+        <div class="card setting-block">
+          <h3 style="margin-top:0;">Message style</h3>
+
+          <label for="msg-colour">Bubble colour</label>
+          <input id="msg-colour" type="color" value="#168ad1">
+
+          <label for="msg-style" style="margin-top:12px;">Text style</label>
+          <select id="msg-style">
+            <option value="normal">Normal</option>
+            <option value="bold">Bold</option>
+            <option value="italic">Italic</option>
+            <option value="bold-italic">Bold + Italic</option>
+          </select>
+
+          <div class="settings-actions">
+            <button class="btn btn-primary" id="save-message-settings">Save messages</button>
+            <span id="message-note" style="display:none;color:#55f5ac;font-size:.78rem;">Saved!</span>
+          </div>
+        </div>
+
+        <div class="card setting-block">
+          <h3 style="margin-top:0;">Background</h3>
+
+          <label for="bg-type">Background type</label>
+          <select id="bg-type">
+            <option value="default">Default galaxy</option>
+            <option value="solid">Solid colour</option>
             <option value="gradient">Gradient</option>
             <option value="image">Image from device</option>
           </select>
-        </label>
 
-        <div id="bg-color-section" style="margin-top:12px;">
-          <label>
-            Background colour
-            <input id="bg-color" type="color" value="#020617" style="width:100%;max-width:400px;height:42px;">
-          </label>
-        </div>
-
-        <div id="bg-gradient-section" style="display:none;flex-wrap:wrap;gap:12px;margin-top:12px;">
-          <label style="flex:1;min-width:150px;">
-            Gradient 1
-            <input id="bg-grad1" type="color" value="#020617" style="width:100%;height:42px;">
-          </label>
-
-          <label style="flex:1;min-width:150px;">
-            Gradient 2
-            <input id="bg-grad2" type="color" value="#071b3d" style="width:100%;height:42px;">
-          </label>
-
-          <label style="flex:1;min-width:150px;">
-            Gradient 3
-            <input id="bg-grad3" type="color" value="#160c42" style="width:100%;height:42px;">
-          </label>
-        </div>
-
-        <div id="bg-image-section" style="display:none;margin-top:12px;">
-          <label>
-            Choose an image
-            <input id="bg-image-input" type="file" accept="image/*" style="display:block;margin-top:7px;padding:8px;">
-          </label>
-          <small style="color:var(--muted);">
-            The image stays in this browser and is not uploaded.
-          </small>
-        </div>
-
-        <div id="bg-preview" style="width:100%;max-width:520px;height:85px;margin-top:14px;border:1px solid var(--border);border-radius:9px;"></div>
-
-        <button id="save-bg-settings" style="margin-top:12px;padding:9px 13px;border:0;border-radius:6px;background:#5b42e8;color:#fff;">
-          Save background
-        </button>
-
-        <span id="bg-saved-note" style="display:none;color:var(--green);margin-left:8px;">Saved!</span>
-      </section>
-
-      <section id="firstaid">
-        <h2>🩹 First Aid</h2>
-        <p>Learn basic first aid skills, emergency steps, and safety tips.</p>
-      </section>
-
-      <section id="instruments">
-        <h2>🎸 Instruments</h2>
-
-        <div style="display:flex;gap:16px;min-height:420px;">
-          <div id="instruments-list">
-            <div class="convo-item">🎸 Guitar</div>
-            <div class="convo-item">🎹 Piano</div>
-            <div class="convo-item">🥁 Drums</div>
-            <div class="convo-item">🎻 Violin</div>
-            <div class="convo-item">🎷 Saxophone</div>
-            <div class="convo-item">🎺 Trumpet</div>
-            <div class="convo-item">🪕 Ukulele</div>
-            <div class="convo-item">🎵 Flute</div>
+          <div id="solid-controls" style="margin-top:12px;display:none;">
+            <label for="solid-colour">Solid colour</label>
+            <input id="solid-colour" type="color" value="#020816">
           </div>
 
-          <div id="instruments-content">
-            <h3>Choose an instrument</h3>
-            <p style="color:var(--muted);">Select an instrument from the left to learn how to play it.</p>
+          <div id="gradient-controls" style="margin-top:12px;display:none;">
+            <label>Gradient colours</label>
+            <div style="display:flex;gap:8px;">
+              <input id="gradient-1" type="color" value="#020816">
+              <input id="gradient-2" type="color" value="#07336d">
+              <input id="gradient-3" type="color" value="#160b3d">
+            </div>
+          </div>
+
+          <div id="image-controls" style="margin-top:12px;display:none;">
+            <label for="background-image-input">Image from gallery</label>
+            <input id="background-image-input" type="file" accept="image/*" style="padding:7px;">
+            <small class="muted">Stored in this browser only.</small>
+          </div>
+
+          <div class="settings-actions">
+            <button class="btn btn-primary" id="save-background-settings">Save background</button>
+            <span id="background-note" style="display:none;color:#55f5ac;font-size:.78rem;">Saved!</span>
           </div>
         </div>
-      </section>
 
-      <section id="music">
-        <h2>🎵 Music</h2>
-        <p>Music theory, rhythm, composition, and practice resources.</p>
-      </section>
-
-      <section id="sports">
-        <h2>🏅 Sports</h2>
-
-        <div style="display:flex;gap:16px;min-height:420px;">
-          <div id="sports-list">
-            <div class="convo-item">⚽ Football</div>
-            <div class="convo-item">🏀 Basketball</div>
-            <div class="convo-item">🏏 Cricket</div>
-            <div class="convo-item">🎾 Tennis</div>
-            <div class="convo-item">🏃 Athletics</div>
-            <div class="convo-item">🏊 Swimming</div>
-            <div class="convo-item">🏐 Volleyball</div>
-            <div class="convo-item">🏸 Badminton</div>
-            <div class="convo-item">🏒 Hockey</div>
-            <div class="convo-item">🏉 Rugby</div>
-          </div>
-
-          <div id="sports-content">
-            <h3>Choose a sport</h3>
-            <p style="color:var(--muted);">Select a sport from the left to see its rules, skills, and routines.</p>
+        <div class="card setting-block">
+          <h3 style="margin-top:0;">Preview</h3>
+          <div id="background-preview" class="background-preview"></div>
+          <div style="margin-top:14px;">
+            <span id="message-preview" class="message-bubble" style="background:#168ad1;">Your messages look like this.</span>
           </div>
         </div>
-      </section>
-
-      <section id="study">
-        <h2>📚 Study</h2>
-
-        <div style="display:flex;gap:16px;min-height:420px;">
-          <div id="study-list">
-            <div class="convo-item">🧮 Maths</div>
-            <div class="convo-item">📖 English</div>
-            <div class="convo-item">🌍 Languages</div>
-            <div class="convo-item">🔬 Science</div>
-            <div class="convo-item">🏛️ History</div>
-            <div class="convo-item">🌎 Geography</div>
-            <div class="convo-item">💻 Computing</div>
-            <div class="convo-item">🎨 Art & Design</div>
-            <div class="convo-item">💰 Economics</div>
-            <div class="convo-item">🧠 Psychology</div>
-          </div>
-
-          <div id="study-content">
-            <h3>Choose a subject</h3>
-            <p style="color:var(--muted);">Select a subject from the left to see lessons and practice ideas.</p>
-          </div>
-        </div>
-      </section>
-
-      <section id="art">
-        <h2>🎨 Art</h2>
-        <p>Drawing, painting, design, animation, and creative projects.</p>
-      </section>
-
-      <section id="code">
-        <h2>💻 Code</h2>
-        <p>HTML, CSS, JavaScript, Python, projects, and coding challenges.</p>
-      </section>
-
-      <section id="games">
-        <h2>🎮 Games</h2>
-        <p>Mini-games, challenges, and leaderboards.</p>
-      </section>
-    </main>
-  </div>
-
-  <div id="chat-modal" style="display:none;position:fixed;inset:0;z-index:2000;align-items:center;justify-content:center;background:rgba(0,0,0,.75);padding:16px;">
-    <div style="width:100%;max-width:370px;padding:18px;border:1px solid var(--border);border-radius:12px;background:#071832;">
-      <h3 id="chat-modal-title">New conversation</h3>
-      <div id="chat-modal-body"></div>
-      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;">
-        <button id="chat-modal-cancel" style="padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:#071832;color:#fff;">Cancel</button>
-        <button id="chat-modal-ok" style="padding:8px 12px;border:0;border-radius:6px;background:#087ed3;color:#fff;">Create</button>
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
 
   <script>
-    let currentUser = null;
-    let chessGame = null;
-    let chessBoard = null;
-    let aiEnabled = true;
-    let clockWhite = 600;
-    let clockBlack = 600;
-    let clockInterval = null;
-    let clocksRunning = false;
-    let boardFlipped = false;
+    /* ------------------------------ Auth ------------------------------ */
 
-    const pieces = {
+    let currentUser = null;
+
+    function cycloneLogin(isGuest) {
+      const overlay = document.getElementById("auth-overlay");
+      const usernameInput = document.getElementById("auth-username");
+      const passwordInput = document.getElementById("auth-password");
+      const message = document.getElementById("auth-message");
+
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if (!isGuest && (!username || !password)) {
+        message.textContent = "Please enter a username and password.";
+        return;
+      }
+
+      currentUser = {
+        username: isGuest ? "Guest" : username,
+        isGuest: isGuest
+      };
+
+      localStorage.setItem("cyclone-user", JSON.stringify(currentUser));
+      overlay.classList.add("hidden");
+    }
+
+    function restoreUser() {
+      try {
+        const saved = localStorage.getItem("cyclone-user");
+        if (saved) {
+          currentUser = JSON.parse(saved);
+          document.getElementById("auth-overlay").classList.add("hidden");
+        }
+      } catch (error) {
+        localStorage.removeItem("cyclone-user");
+      }
+    }
+
+    /* ------------------------------ Navigation ------------------------------ */
+
+    function showPage(name) {
+      document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
+      document.querySelectorAll(".nav-btn").forEach(button => button.classList.remove("active"));
+
+      document.getElementById("page-" + name)?.classList.add("active");
+      document.querySelector(`.nav-btn[data-page="${name}"]`)?.classList.add("active");
+
+      if (name === "chess") {
+        setTimeout(resizeBoard, 50);
+      }
+    }
+
+    function initNavigation() {
+      document.querySelectorAll(".nav-btn").forEach(button => {
+        button.addEventListener("click", () => showPage(button.dataset.page));
+      });
+    }
+
+    /* ------------------------------ Header time ------------------------------ */
+
+    function updateHeaderTime() {
+      const output = document.getElementById("header-time");
+      output.textContent = new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    /* ------------------------------ Chess ------------------------------ */
+
+    const CHESS_PIECES = {
       w: { k: "♔", q: "♕", r: "♖", b: "♗", n: "♘", p: "♙" },
       b: { k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟" }
     };
 
-    const openings = [
-      ["Italian Game", "1.e4 e5 2.Nf3 Nc6 3.Bc4"],
-      ["Ruy López", "1.e4 e5 2.Nf3 Nc6 3.Bb5"],
-      ["Sicilian Defense", "1.e4 c5"],
-      ["Queen's Gambit", "1.d4 d5 2.c4"],
-      ["King's Indian Defense", "1.d4 Nf6 2.c4 g6"],
-      ["French Defense", "1.e4 e6 2.d4 d5"],
-      ["Caro-Kann Defense", "1.e4 c6 2.d4 d5"],
-      ["Nimzo-Indian Defense", "1.d4 Nf6 2.c4 e6"],
-      ["English Opening", "1.c4"],
-      ["Scandinavian Defense", "1.e4 d5"]
+    const FILES = "abcdefgh";
+
+    let game = null;
+    let selectedSquare = null;
+    let boardFlipped = false;
+    let aiEnabled = true;
+    let showCoordinates = true;
+    let clockWhite = 600;
+    let clockBlack = 600;
+    let clockTimer = null;
+    let clocksStarted = false;
+    let boardSize = 520;
+
+    const OPENINGS = [
+      { name: "Italian Game", moves: "e4 e5 Nf3 Nc6 Bc4" },
+      { name: "Ruy López", moves: "e4 e5 Nf3 Nc6 Bb5" },
+      { name: "Sicilian Defense", moves: "e4 c5" },
+      { name: "Queen's Gambit", moves: "d4 d5 c4" },
+      { name: "King's Indian Defense", moves: "d4 Nf6 c4 g6" },
+      { name: "French Defense", moves: "e4 e6 d4 d5" },
+      { name: "Caro-Kann Defense", moves: "e4 c6 d4 d5" },
+      { name: "Nimzo-Indian Defense", moves: "d4 Nf6 c4 e6 Nc3 Bb4" },
+      { name: "English Opening", moves: "c4" },
+      { name: "Scandinavian Defense", moves: "e4 d5" }
     ];
 
-    const instrumentContent = {
-      Guitar: `
-        <h3>🎸 Guitar</h3>
-        <p>Learn chords, strumming, scales, rhythm, and songs.</p>
-        <h4>Beginner routine</h4>
-        <ol>
-          <li>Tune the guitar.</li>
-          <li>Practice C, G, D, Em, and Am chords.</li>
-          <li>Switch between two chords for five minutes.</li>
-          <li>Practice down-up strumming with a metronome.</li>
-          <li>Finish by learning a simple song.</li>
-        </ol>
-      `,
-      Piano: `
-        <h3>🎹 Piano</h3>
-        <p>Learn notes, scales, chords, melodies, and reading music.</p>
-        <h4>Beginner routine</h4>
-        <ol>
-          <li>Find middle C.</li>
-          <li>Practice the C major scale.</li>
-          <li>Learn C, F, and G major chords.</li>
-          <li>Play a melody with the right hand.</li>
-          <li>Add simple left-hand chords.</li>
-        </ol>
-      `,
-      Drums: `
-        <h3>🥁 Drums</h3>
-        <p>Learn rhythm, coordination, beats, fills, and timing.</p>
-        <h4>Basic rock beat</h4>
-        <ul>
-          <li>Hi-hat on every eighth note.</li>
-          <li>Kick on beats one and three.</li>
-          <li>Snare on beats two and four.</li>
-        </ul>
-      `,
-      Violin: `
-        <h3>🎻 Violin</h3>
-        <p>Learn posture, bow control, intonation, and first position.</p>
-        <h4>Beginner routine</h4>
-        <ol>
-          <li>Relax your shoulders and check posture.</li>
-          <li>Play long open-string bows.</li>
-          <li>Practise G, D, A, and E strings.</li>
-          <li>Learn first-position finger patterns.</li>
-        </ol>
-      `,
-      Saxophone: `
-        <h3>🎷 Saxophone</h3>
-        <p>Learn breathing, embouchure, fingering, tone, and articulation.</p>
-        <h4>Routine</h4>
-        <ol>
-          <li>Assemble and check the reed.</li>
-          <li>Play long tones.</li>
-          <li>Practise low-register notes.</li>
-          <li>Work on tonguing and simple scales.</li>
-        </ol>
-      `,
-      Trumpet: `
-        <h3>🎺 Trumpet</h3>
-        <p>Learn buzzing, breathing, embouchure, valves, and range.</p>
-        <h4>Routine</h4>
-        <ol>
-          <li>Practise relaxed breathing.</li>
-          <li>Buzz gently without forcing.</li>
-          <li>Play long, comfortable tones.</li>
-          <li>Practise simple valve patterns.</li>
-        </ol>
-      `,
-      Ukulele: `
-        <h3>🪕 Ukulele</h3>
-        <p>Learn easy chords, rhythm, and songs.</p>
-        <h4>Starter chords</h4>
-        <p>C, F, G, Am, and Dm are useful beginner chords.</p>
-      `,
-      Flute: `
-        <h3>🎵 Flute</h3>
-        <p>Learn breath control, embouchure, notes, scales, and articulation.</p>
-        <h4>Routine</h4>
-        <ol>
-          <li>Practise a steady air stream.</li>
-          <li>Play long tones.</li>
-          <li>Learn B, A, and G.</li>
-          <li>Practise simple melodies slowly.</li>
-        </ol>
-      `
-    };
+    function createGame() {
+      return {
+        board: [
+          ["br","bn","bb","bq","bk","bb","bn","br"],
+          ["bp","bp","bp","bp","bp","bp","bp","bp"],
+          [null,null,null,null,null,null,null,null],
+          [null,null,null,null,null,null,null,null],
+          [null,null,null,null,null,null,null,null],
+          [null,null,null,null,null,null,null,null],
+          ["wp","wp","wp","wp","wp","wp","wp","wp"],
+          ["wr","wn","wb","wq","wk","wb","wn","wr"]
+        ],
+        turn: "w",
+        castling: { wK: true, wQ: true, bK: true, bQ: true },
+        ep: null,
+        history: [],
+        lastMove: null
+      };
+    }
 
-    const sportContent = {
-      Football: `
-        <h3>⚽ Football</h3>
-        <p>Score more goals than the other team by passing, dribbling, and shooting.</p>
-        <h4>Rules</h4>
-        <ul>
-          <li>Two teams normally play with eleven players.</li>
-          <li>Outfield players cannot deliberately use their hands.</li>
-          <li>A goal is scored when the whole ball crosses the goal line.</li>
-          <li>Fouls can result in free kicks, penalties, or cards.</li>
-        </ul>
-        <h4>Beginner routine</h4>
-        <ol>
-          <li>Warm up for ten minutes.</li>
-          <li>Dribble around cones.</li>
-          <li>Pass against a wall.</li>
-          <li>Practise shooting with both feet.</li>
-          <li>Play a small-sided game.</li>
-        </ol>
-      `,
-      Basketball: `
-        <h3>🏀 Basketball</h3>
-        <p>Score points by shooting the ball through the opponent's hoop.</p>
-        <h4>Rules</h4>
-        <ul>
-          <li>Players must dribble while moving with the ball.</li>
-          <li>A normal basket is worth two points.</li>
-          <li>A shot from beyond the three-point line is worth three.</li>
-          <li>Defenders must avoid illegal contact.</li>
-        </ul>
-        <h4>Beginner routine</h4>
-        <ol>
-          <li>Practise stationary dribbling.</li>
-          <li>Work on both-hand layups.</li>
-          <li>Practise form shooting.</li>
-          <li>Do defensive slides and short sprints.</li>
-        </ol>
-      `,
-      Cricket: `
-        <h3>🏏 Cricket</h3>
-        <p>Score runs while the opposing team tries to take wickets.</p>
-        <h4>Rules</h4>
-        <ul>
-          <li>An over contains six legal deliveries.</li>
-          <li>Batters score by running or hitting boundaries.</li>
-          <li>A wicket can be taken in several ways, including bowled, caught, or run out.</li>
-        </ul>
-        <h4>Beginner routine</h4>
-        <ol>
-          <li>Practise batting stance and footwork.</li>
-          <li>Shadow-bat straight drives.</li>
-          <li>Practise catching with soft hands.</li>
-          <li>Work on bowling line and length.</li>
-        </ol>
-      `,
-      Tennis: `
-        <h3>🎾 Tennis</h3>
-        <p>Hit the ball over the net and into the opponent's court.</p>
-        <h4>Rules</h4>
-        <ul>
-          <li>Points normally progress through 15, 30, 40, and game.</li>
-          <li>The serve must land in the diagonal service box.</li>
-          <li>A ball landing outside the lines is out.</li>
-        </ul>
-        <h4>Beginner routine</h4>
-        <ol>
-          <li>Practise forehands and backhands.</li>
-          <li>Work on ready position and footwork.</li>
-          <li>Practise serving tosses.</li>
-          <li>Rally slowly before adding power.</li>
-        </ol>
-      `,
-      Athletics: `
-        <h3>🏃 Athletics</h3>
-        <p>Track and field includes running, jumping, and throwing events.</p>
-        <h4>Beginner routine</h4>
-        <ol>
-          <li>Jog for ten minutes.</li>
-          <li>Practise running drills.</li>
-          <li>Complete short controlled intervals.</li>
-          <li>Add strength and mobility work.</li>
-          <li>Rest between hard sessions.</li>
-        </ol>
-      `,
-      Swimming: `
-        <h3>🏊 Swimming</h3>
-        <p>Learn freestyle, backstroke, breaststroke, and butterfly.</p>
-        <h4>Beginner routine</h4>
-        <ol>
-          <li>Warm up with easy swimming.</li>
-          <li>Practise body position and breathing.</li>
-          <li>Complete short technique drills.</li>
-          <li>Swim easy lengths with rest between them.</li>
-        </ol>
-      `,
-      Volleyball: `
-        <h3>🏐 Volleyball</h3>
-        <p>Send the ball over the net and make it land on the opponent's side.</p>
-        <h4>Rules</h4>
-        <ul>
-          <li>A team normally gets up to three contacts.</li>
-          <li>Players rotate after winning the serve.</li>
-          <li>A rally ends when the ball lands or a fault occurs.</li>
-        </ul>
-        <h4>Routine</h4>
-        <ol>
-          <li>Practise forearm passing.</li>
-          <li>Practise overhead setting.</li>
-          <li>Work on serving.</li>
-          <li>Play small-sided rallies.</li>
-        </ol>
-      `,
-      Badminton: `
-        <h3>🏸 Badminton</h3>
-        <p>Use a racket to hit a shuttlecock over the net.</p>
-        <h4>Rules</h4>
-        <ul>
-          <li>Games commonly use rally scoring to twenty-one points.</li>
-          <li>The shuttle must land inside the correct court boundaries.</li>
-          <li>Players serve diagonally.</li>
-        </ul>
-        <h4>Routine</h4>
-        <ol>
-          <li>Practise grip and ready position.</li>
-          <li>Work on clears and drops.</li>
-          <li>Practise court footwork.</li>
-          <li>Finish with short rallies.</li>
-        </ol>
-      `,
-      Hockey: `
-        <h3>🏒 Hockey</h3>
-        <p>Use a stick to move a ball or puck into the opponent's goal.</p>
-        <h4>Routine</h4>
-        <ol>
-          <li>Practise stick control.</li>
-          <li>Dribble around cones.</li>
-          <li>Pass with a partner.</li>
-          <li>Practise shooting and defensive positioning.</li>
-        </ol>
-      `,
-      Rugby: `
-        <h3>🏉 Rugby</h3>
-        <p>Carry, pass, and kick an oval ball to score tries and goals.</p>
-        <h4>Rules</h4>
-        <ul>
-          <li>Passes must travel sideways or backwards.</li>
-          <li>The ball can be kicked forwards.</li>
-          <li>Tackles must be made safely and below the shoulders.</li>
-        </ul>
-        <h4>Routine</h4>
-        <ol>
-          <li>Practise catching and passing.</li>
-          <li>Work on sprinting and agility.</li>
-          <li>Learn safe tackling with a qualified coach.</li>
-          <li>Play small-sided games.</li>
-        </ol>
-      `
-    };
+    function copyGame(state) {
+      return {
+        board: state.board.map(row => row.slice()),
+        turn: state.turn,
+        castling: { ...state.castling },
+        ep: state.ep ? state.ep.slice() : null,
+        history: state.history.slice(),
+        lastMove: state.lastMove ? { ...state.lastMove } : null
+      };
+    }
 
-    const studyContent = {
-      Maths: `
-        <h3>🧮 Maths</h3>
-        <p>Learn arithmetic, algebra, geometry, statistics, and probability.</p>
-        <h4>Practice plan</h4>
-        <ol>
-          <li>Review fractions, decimals, and percentages.</li>
-          <li>Solve linear equations.</li>
-          <li>Practise area, perimeter, and volume.</li>
-          <li>Study graphs and basic statistics.</li>
-        </ol>
-      `,
-      English: `
-        <h3>📖 English</h3>
-        <p>Improve grammar, reading, vocabulary, writing, and analysis.</p>
-        <h4>Practice plan</h4>
-        <ol>
-          <li>Read a short passage every day.</li>
-          <li>Summarise it in a few sentences.</li>
-          <li>Learn new vocabulary in context.</li>
-          <li>Write clear paragraphs with evidence.</li>
-        </ol>
-      `,
-      Languages: `
-        <h3>🌍 Languages</h3>
-        <p>Build vocabulary, grammar, listening, speaking, reading, and writing.</p>
-        <h4>Practice plan</h4>
-        <ol>
-          <li>Learn common phrases.</li>
-          <li>Practise pronunciation aloud.</li>
-          <li>Review vocabulary with spaced repetition.</li>
-          <li>Write a few sentences every day.</li>
-        </ol>
-      `,
-      Science: `
-        <h3>🔬 Science</h3>
-        <p>Explore biology, chemistry, physics, experiments, and evidence.</p>
-        <h4>Key topics</h4>
-        <ul>
-          <li>Cells and living systems.</li>
-          <li>Atoms and chemical reactions.</li>
-          <li>Forces, energy, and motion.</li>
-          <li>Scientific methods and data.</li>
-        </ul>
-      `,
-      History: `
-        <h3>🏛️ History</h3>
-        <p>Study people, events, societies, causes, effects, and sources.</p>
-        <h4>Practice plan</h4>
-        <ol>
-          <li>Build a timeline.</li>
-          <li>Identify causes and consequences.</li>
-          <li>Compare different perspectives.</li>
-          <li>Use evidence when writing answers.</li>
-        </ol>
-      `,
-      Geography: `
-        <h3>🌎 Geography</h3>
-        <p>Learn about places, environments, populations, maps, and climate.</p>
-        <h4>Practice plan</h4>
-        <ol>
-          <li>Study continents and countries.</li>
-          <li>Practise maps and coordinates.</li>
-          <li>Compare physical and human geography.</li>
-          <li>Review environmental case studies.</li>
-        </ol>
-      `,
-      Computing: `
-        <h3>💻 Computing</h3>
-        <p>Learn programming, algorithms, web development, and digital safety.</p>
-        <h4>Practice plan</h4>
-        <ol>
-          <li>Learn variables and data types.</li>
-          <li>Practise conditions and loops.</li>
-          <li>Build a small webpage.</li>
-          <li>Make a simple interactive project.</li>
-        </ol>
-      `,
-      "Art & Design": `
-        <h3>🎨 Art & Design</h3>
-        <p>Develop drawing, colour, composition, layout, and design skills.</p>
-        <h4>Practice plan</h4>
-        <ol>
-          <li>Practise shapes and shading.</li>
-          <li>Study perspective.</li>
-          <li>Try different colour palettes.</li>
-          <li>Create a poster or logo.</li>
-        </ol>
-      `,
-      Economics: `
-        <h3>💰 Economics</h3>
-        <p>Learn how people, businesses, and governments make choices about resources.</p>
-        <h4>Key topics</h4>
-        <ul>
-          <li>Supply and demand.</li>
-          <li>Opportunity cost.</li>
-          <li>Markets and competition.</li>
-          <li>Inflation and unemployment.</li>
-        </ul>
-      `,
-      Psychology: `
-        <h3>🧠 Psychology</h3>
-        <p>Study behaviour, thinking, memory, development, and social interaction.</p>
-        <h4>Practice plan</h4>
-        <ol>
-          <li>Learn key terms.</li>
-          <li>Compare different theories.</li>
-          <li>Review research methods.</li>
-          <li>Practise evaluating evidence.</li>
-        </ol>
-      `
-    };
+    function inside(row, col) {
+      return row >= 0 && row < 8 && col >= 0 && col < 8;
+    }
 
-    function initAuth() {
-      const overlay = document.getElementById("auth-overlay");
-      const message = document.getElementById("auth-message");
-      const username = document.getElementById("auth-username");
-      const password = document.getElementById("auth-password");
+    function other(colour) {
+      return colour === "w" ? "b" : "w";
+    }
 
-      function login(isGuest) {
-        currentUser = {
-          username: isGuest ? "Guest" : username.value.trim(),
-          isGuest
-        };
+    function squareName(row, col) {
+      return FILES[col] + (8 - row);
+    }
 
-        overlay.classList.add("hidden");
+    function parseSquare(square) {
+      return [8 - Number(square[1]), FILES.indexOf(square[0])];
+    }
+
+    function findKing(state, colour) {
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          if (state.board[row][col] === colour + "k") return [row, col];
+        }
+      }
+      return null;
+    }
+
+    function squareAttacked(state, row, col, by) {
+      const board = state.board;
+
+      const pawnRow = by === "w" ? row + 1 : row - 1;
+      for (const delta of [-1, 1]) {
+        if (inside(pawnRow, col + delta) && board[pawnRow][col + delta] === by + "p") return true;
       }
 
-      document.getElementById("btn-login").addEventListener("click", () => {
-        if (!username.value.trim() || !password.value.trim()) {
-          message.textContent = "Enter a username and password.";
-          return;
+      const knightMoves = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
+      for (const [dr, dc] of knightMoves) {
+        if (inside(row + dr, col + dc) && board[row + dr][col + dc] === by + "n") return true;
+      }
+
+      for (let dr = -1; dr <= 1; dr++) {
+        for (let dc = -1; dc <= 1; dc++) {
+          if (dr === 0 && dc === 0) continue;
+          if (inside(row + dr, col + dc) && board[row + dr][col + dc] === by + "k") return true;
         }
+      }
 
-        login(false);
-      });
-
-      document.getElementById("btn-signup").addEventListener("click", () => {
-        if (!username.value.trim() || !password.value.trim()) {
-          message.textContent = "Enter a username and password.";
-          return;
-        }
-
-        login(false);
-      });
-
-      document.getElementById("btn-guest").addEventListener("click", () => {
-        login(true);
-      });
-    }
-
-    function initTabs() {
-      document.querySelectorAll(".nav-btn").forEach(button => {
-        button.addEventListener("click", () => {
-          const tab = button.dataset.tab;
-
-          document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
-          button.classList.add("active");
-
-          document.querySelectorAll("section").forEach(section => section.classList.remove("active"));
-          document.getElementById(tab)?.classList.add("active");
-
-          if (tab === "chess") {
-            setTimeout(() => {
-              resizeChessBoard();
-            }, 30);
+      const diagonals = [[-1,-1],[-1,1],[1,-1],[1,1]];
+      for (const [dr, dc] of diagonals) {
+        let r = row + dr;
+        let c = col + dc;
+        while (inside(r, c)) {
+          const piece = board[r][c];
+          if (piece) {
+            if (piece === by + "b" || piece === by + "q") return true;
+            break;
           }
-        });
-      });
-    }
-
-    function resizeChessBoard() {
-      const board = document.getElementById("board");
-      if (!board) return;
-
-      const width = Math.min(board.parentElement.clientWidth, 560);
-      board.style.height = width + "px";
-      board.style.width = width + "px";
-
-      if (chessBoard) renderChessBoard();
-    }
-
-    function initChess() {
-      chessGame = new Chess();
-      renderChessBoard();
-      renderOpenings();
-      updateChessStatus();
-      updateClocks();
-
-      document.getElementById("new-game-btn").addEventListener("click", newGame);
-      document.getElementById("flip-board-btn").addEventListener("click", () => {
-        boardFlipped = !boardFlipped;
-        renderChessBoard();
-      });
-
-      document.getElementById("copy-fen-btn").addEventListener("click", () => {
-        const fen = chessGame.fen();
-
-        if (navigator.clipboard) {
-          navigator.clipboard.writeText(fen).then(() => {
-            alert("FEN copied.");
-          });
-        } else {
-          prompt("Copy this FEN:", fen);
+          r += dr;
+          c += dc;
         }
-      });
+      }
 
-      document.getElementById("toggle-ai-btn").addEventListener("click", event => {
-        aiEnabled = !aiEnabled;
-        event.target.textContent = aiEnabled ? "AI: On" : "AI: Off";
-      });
+      const lines = [[-1,0],[1,0],[0,-1],[0,1]];
+      for (const [dr, dc] of lines) {
+        let r = row + dr;
+        let c = col + dc;
+        while (inside(r, c)) {
+          const piece = board[r][c];
+          if (piece) {
+            if (piece === by + "r" || piece === by + "q") return true;
+            break;
+          }
+          r += dr;
+          c += dc;
+        }
+      }
 
-      const light = document.getElementById("board-light-color");
-      const dark = document.getElementById("board-dark-color");
-
-      const savedLight = localStorage.getItem("cyclone-board-light") || "#d8e9f5";
-      const savedDark = localStorage.getItem("cyclone-board-dark") || "#3675a8";
-
-      light.value = savedLight;
-      dark.value = savedDark;
-      setBoardColours(savedLight, savedDark);
-
-      document.getElementById("save-board-colors").addEventListener("click", () => {
-        localStorage.setItem("cyclone-board-light", light.value);
-        localStorage.setItem("cyclone-board-dark", dark.value);
-        setBoardColours(light.value, dark.value);
-
-        const note = document.getElementById("board-colors-saved");
-        note.style.display = "inline";
-
-        setTimeout(() => {
-          note.style.display = "none";
-        }, 1400);
-      });
-
-      window.addEventListener("resize", resizeChessBoard);
-      setTimeout(resizeChessBoard, 100);
+      return false;
     }
 
-    function setBoardColours(light, dark) {
-      document.documentElement.style.setProperty("--board-light", light);
-      document.documentElement.style.setProperty("--board-dark", dark);
-      renderChessBoard();
+    function inCheck(state, colour) {
+      const king = findKing(state, colour);
+      return king ? squareAttacked(state, king[0], king[1], other(colour)) : false;
+    }
+
+    function pseudoMoves(state, row, col) {
+      const board = state.board;
+      const piece = board[row][col];
+      if (!piece) return [];
+
+      const colour = piece[0];
+      const type = piece[1];
+      const moves = [];
+
+      function push(toRow, toCol, extra = {}) {
+        moves.push({ fr: row, fc: col, tr: toRow, tc: toCol, ...extra });
+      }
+
+      function step(toRow, toCol) {
+        if (!inside(toRow, toCol)) return;
+        const target = board[toRow][toCol];
+        if (!target || target[0] !== colour) push(toRow, toCol);
+      }
+
+      function slide(directions) {
+        for (const [dr, dc] of directions) {
+          let r = row + dr;
+          let c = col + dc;
+          while (inside(r, c)) {
+            const target = board[r][c];
+            if (!target) {
+              push(r, c);
+            } else {
+              if (target[0] !== colour) push(r, c);
+              break;
+            }
+            r += dr;
+            c += dc;
+          }
+        }
+      }
+
+      if (type === "p") {
+        const direction = colour === "w" ? -1 : 1;
+        const startRow = colour === "w" ? 6 : 1;
+        const lastRow = colour === "w" ? 0 : 7;
+
+        function pawnMove(toRow, toCol, extra = {}) {
+          if (toRow === lastRow) {
+            ["q", "r", "b", "n"].forEach(promotion => push(toRow, toCol, { ...extra, promotion }));
+          } else {
+            push(toRow, toCol, extra);
+          }
+        }
+
+        if (inside(row + direction, col) && !board[row + direction][col]) {
+          pawnMove(row + direction, col);
+
+          if (row === startRow && !board[row + direction * 2][col]) {
+            push(row + direction * 2, col, { double: true });
+          }
+        }
+
+        for (const delta of [-1, 1]) {
+          const r = row + direction;
+          const c = col + delta;
+          if (!inside(r, c)) continue;
+
+          if (board[r][c] && board[r][c][0] !== colour) {
+            pawnMove(r, c);
+          } else if (state.ep && state.ep[0] === r && state.ep[1] === c) {
+            push(r, c, { enPassant: true });
+          }
+        }
+      }
+
+      if (type === "n") {
+        [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]]
+          .forEach(([dr, dc]) => step(row + dr, col + dc));
+      }
+
+      if (type === "b" || type === "q") slide([[-1,-1],[-1,1],[1,-1],[1,1]]);
+      if (type === "r" || type === "q") slide([[-1,0],[1,0],[0,-1],[0,1]]);
+
+      if (type === "k") {
+        for (let dr = -1; dr <= 1; dr++) {
+          for (let dc = -1; dc <= 1; dc++) {
+            if (dr || dc) step(row + dr, col + dc);
+          }
+        }
+
+        const home = colour === "w" ? 7 : 0;
+        const enemy = other(colour);
+
+        if (row === home && col === 4 && !squareAttacked(state, home, 4, enemy)) {
+          if (
+            state.castling[colour + "K"] &&
+            board[home][7] === colour + "r" &&
+            !board[home][5] &&
+            !board[home][6] &&
+            !squareAttacked(state, home, 5, enemy) &&
+            !squareAttacked(state, home, 6, enemy)
+          ) {
+            push(home, 6, { castle: "K" });
+          }
+
+          if (
+            state.castling[colour + "Q"] &&
+            board[home][0] === colour + "r" &&
+            !board[home][1] &&
+            !board[home][2] &&
+            !board[home][3] &&
+            !squareAttacked(state, home, 3, enemy) &&
+            !squareAttacked(state, home, 2, enemy)
+          ) {
+            push(home, 2, { castle: "Q" });
+          }
+        }
+      }
+
+      return moves;
+    }
+
+    function applyMove(state, move) {
+      const next = copyGame(state);
+      const board = next.board;
+      const piece = board[move.fr][move.fc];
+      const captured = board[move.tr][move.tc];
+
+      board[move.tr][move.tc] = move.promotion ? piece[0] + move.promotion : piece;
+      board[move.fr][move.fc] = null;
+
+      if (move.enPassant) {
+        board[move.fr][move.tc] = null;
+      }
+
+      if (move.castle === "K") {
+        board[move.tr][5] = board[move.tr][7];
+        board[move.tr][7] = null;
+      }
+
+      if (move.castle === "Q") {
+        board[move.tr][3] = board[move.tr][0];
+        board[move.tr][0] = null;
+      }
+
+      if (board[7][4] !== "wk") {
+        next.castling.wK = false;
+        next.castling.wQ = false;
+      }
+      if (board[7][7] !== "wr") next.castling.wK = false;
+      if (board[7][0] !== "wr") next.castling.wQ = false;
+
+      if (board[0][4] !== "bk") {
+        next.castling.bK = false;
+        next.castling.bQ = false;
+      }
+      if (board[0][7] !== "br") next.castling.bK = false;
+      if (board[0][0] !== "br") next.castling.bQ = false;
+
+      next.ep = move.double ? [(move.fr + move.tr) / 2, move.fc] : null;
+      next.turn = other(state.turn);
+      next.lastMove = {
+        from: squareName(move.fr, move.fc),
+        to: squareName(move.tr, move.tc)
+      };
+
+      return next;
+    }
+
+    function legalMovesFrom(state, row, col) {
+      const piece = state.board[row][col];
+      if (!piece) return [];
+
+      return pseudoMoves(state, row, col).filter(move => {
+        const next = applyMove(state, move);
+        return !inCheck(next, piece[0]);
+      });
+    }
+
+    function allLegalMoves(state) {
+      const moves = [];
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const piece = state.board[row][col];
+          if (piece && piece[0] === state.turn) {
+            moves.push(...legalMovesFrom(state, row, col));
+          }
+        }
+      }
+      return moves;
+    }
+
+    function notation(state, move) {
+      const piece = state.board[move.fr][move.fc];
+      const type = piece[1];
+      const capture = !!state.board[move.tr][move.tc] || move.enPassant;
+
+      if (move.castle === "K") return "O-O";
+      if (move.castle === "Q") return "O-O-O";
+
+      if (type === "p") {
+        return (capture ? FILES[move.fc] + "x" : "") +
+          squareName(move.tr, move.tc) +
+          (move.promotion ? "=" + move.promotion.toUpperCase() : "");
+      }
+
+      return type.toUpperCase() +
+        (capture ? "x" : "") +
+        squareName(move.tr, move.tc);
     }
 
     function renderChessBoard() {
-      const board = document.getElementById("board");
-      if (!board || !chessGame) return;
+      const output = document.getElementById("board");
+      if (!output || !game) return;
 
-      board.innerHTML = "";
+      output.innerHTML = "";
+      const board = document.createElement("div");
+      board.className = "chess-board";
 
-      const wrapper = document.createElement("div");
-      wrapper.className = "chess-board";
-
-      const history = chessGame.history({ verbose: true });
-      const last = history[history.length - 1];
+      const legal = selectedSquare
+        ? legalMovesFrom(game, selectedSquare[0], selectedSquare[1])
+        : [];
 
       for (let displayRow = 0; displayRow < 8; displayRow++) {
         for (let displayCol = 0; displayCol < 8; displayCol++) {
           const row = boardFlipped ? 7 - displayRow : displayRow;
           const col = boardFlipped ? 7 - displayCol : displayCol;
-
-          const squareName = "abcdefgh"[col] + (8 - row);
           const square = document.createElement("div");
+          const name = squareName(row, col);
+          const piece = game.board[row][col];
 
-          square.className = "chess-square " + ((row + col) % 2 ? "dark" : "light");
-          square.dataset.square = squareName;
+          square.className = "chess-square " + ((row + col) % 2 === 0 ? "light" : "dark");
+          square.dataset.square = name;
 
-          if (last && (last.from === squareName || last.to === squareName)) {
+          if (game.lastMove && (game.lastMove.from === name || game.lastMove.to === name)) {
             square.classList.add("last-move");
           }
 
-          const piece = chessGame.get(squareName);
+          if (selectedSquare && selectedSquare[0] === row && selectedSquare[1] === col) {
+            square.classList.add("selected");
+          }
+
+          const legalMove = legal.find(move => move.tr === row && move.tc === col);
+          if (legalMove) {
+            square.classList.add(piece || legalMove.enPassant ? "capture" : "legal");
+          }
 
           if (piece) {
-            const pieceEl = document.createElement("span");
-            pieceEl.className = "chess-piece " + (piece.color === "w" ? "white-piece" : "black-piece");
-            pieceEl.textContent = pieces[piece.color][piece.type];
-            square.appendChild(pieceEl);
+            const pieceElement = document.createElement("span");
+            pieceElement.className = "chess-piece" + (piece[0] === "b" ? " black" : "");
+            pieceElement.textContent = CHESS_PIECES[piece[0]][piece[1]];
+            square.appendChild(pieceElement);
           }
 
-          if (displayRow === 7) {
-            const file = document.createElement("span");
-            file.className = "chess-coord chess-file";
-            file.textContent = "abcdefgh"[col];
-            square.appendChild(file);
+          if (showCoordinates) {
+            if (displayRow === 7) {
+              const file = document.createElement("span");
+              file.className = "coord file";
+              file.textContent = FILES[col];
+              square.appendChild(file);
+            }
+
+            if (displayCol === 0) {
+              const rank = document.createElement("span");
+              rank.className = "coord rank";
+              rank.textContent = 8 - row;
+              square.appendChild(rank);
+            }
           }
 
-          if (displayCol === 0) {
-            const rank = document.createElement("span");
-            rank.className = "chess-coord chess-rank";
-            rank.textContent = 8 - row;
-            square.appendChild(rank);
-          }
-
-          square.addEventListener("click", () => handleChessClick(squareName));
-          wrapper.appendChild(square);
+          square.addEventListener("click", () => chessClick(row, col));
+          board.appendChild(square);
         }
       }
 
-      board.appendChild(wrapper);
+      output.appendChild(board);
     }
 
-    let selectedSquare = null;
+    function chessClick(row, col) {
+      if (!game || game.turn !== "w") return;
 
-    function handleChessClick(square) {
-      if (chessGame.game_over()) return;
-      if (aiEnabled && chessGame.turn() === "b") return;
-
-      const clicked = chessGame.get(square);
+      const clickedPiece = game.board[row][col];
 
       if (!selectedSquare) {
-        if (clicked && clicked.color === chessGame.turn()) {
-          selectedSquare = square;
-          highlightSelected(square);
+        if (clickedPiece && clickedPiece[0] === "w") {
+          selectedSquare = [row, col];
+          renderChessBoard();
         }
-
         return;
       }
 
-      const move = chessGame.move({
-        from: selectedSquare,
-        to: square,
-        promotion: "q"
-      });
+      const matches = legalMovesFrom(game, selectedSquare[0], selectedSquare[1])
+        .filter(move => move.tr === row && move.tc === col);
 
-      if (move) {
-        selectedSquare = null;
-        startClocks();
-        updateChessUI();
-        renderChessBoard();
+      if (matches.length) {
+        const move = matches.find(item => item.promotion === "q") || matches[0];
+        playChessMove(move);
+        return;
+      }
 
-        if (aiEnabled && !chessGame.game_over() && chessGame.turn() === "b") {
-          setTimeout(makeAIMove, 350);
-        }
-      } else if (clicked && clicked.color === chessGame.turn()) {
-        selectedSquare = square;
-        highlightSelected(square);
+      if (clickedPiece && clickedPiece[0] === "w") {
+        selectedSquare = [row, col];
       } else {
         selectedSquare = null;
-        renderChessBoard();
+      }
+
+      renderChessBoard();
+    }
+
+    function playChessMove(move) {
+      const san = notation(game, move);
+      game.history.push({ state: copyGame(game), san });
+      game = applyMove(game, move);
+      selectedSquare = null;
+
+      startClocks();
+      updateChessUI();
+      renderChessBoard();
+
+      if (aiEnabled && game.turn === "b" && allLegalMoves(game).length) {
+        setTimeout(botMove, 350);
       }
     }
 
-    function highlightSelected(squareName) {
-      renderChessBoard();
+    function botMove() {
+      if (!aiEnabled || !game || game.turn !== "b") return;
 
-      const selected = document.querySelector(`[data-square="${squareName}"]`);
-      if (selected) selected.classList.add("selected");
-
-      chessGame.moves({
-        square: squareName,
-        verbose: true
-      }).forEach(move => {
-        const target = document.querySelector(`[data-square="${move.to}"]`);
-        if (!target) return;
-
-        target.classList.add(chessGame.get(move.to) ? "capture" : "legal");
-      });
-    }
-
-    function makeAIMove() {
-      if (!aiEnabled || chessGame.game_over() || chessGame.turn() !== "b") return;
-
-      const moves = chessGame.moves();
+      const moves = allLegalMoves(game);
       if (!moves.length) return;
 
-      const captures = moves.filter(move => /x/.test(move));
-      const move = captures.length
-        ? captures[Math.floor(Math.random() * captures.length)]
-        : moves[Math.floor(Math.random() * moves.length)];
+      const captures = moves.filter(move => game.board[move.tr][move.tc] || move.enPassant);
+      const choices = captures.length ? captures : moves;
+      const move = choices[Math.floor(Math.random() * choices.length)];
 
-      chessGame.move(move);
-      updateChessUI();
-      renderChessBoard();
+      playChessMove(move);
     }
 
     function updateChessUI() {
+      updateMoves();
       updateChessStatus();
-      updateMoveList();
-      updateOpeningName();
+      updateOpening();
     }
 
-    function updateChessStatus() {
-      const status = document.getElementById("game-status");
-      const turn = document.getElementById("turn-indicator");
-
-      if (!status || !turn) return;
-
-      turn.textContent = chessGame.turn() === "w" ? "White" : "Black";
-
-      if (chessGame.in_checkmate()) {
-        status.textContent = "Checkmate";
-      } else if (chessGame.in_draw()) {
-        status.textContent = "Draw";
-      } else if (chessGame.in_check()) {
-        status.textContent = "Check";
-      } else {
-        status.textContent = "Playing";
-      }
-    }
-
-    function updateMoveList() {
+    function updateMoves() {
       const output = document.getElementById("move-list");
-      const history = chessGame.history();
-
       output.innerHTML = "";
 
-      if (!history.length) {
-        output.innerHTML = '<span style="color:#8298b7;">No moves yet.</span>';
+      if (!game.history.length) {
+        output.innerHTML = '<span class="muted">No moves yet.</span>';
         return;
       }
 
-      for (let i = 0; i < history.length; i += 2) {
+      for (let index = 0; index < game.history.length; index += 2) {
+        const white = game.history[index]?.san || "";
+        const black = game.history[index + 1]?.san || "";
         const row = document.createElement("div");
         row.className = "move-row";
-        row.textContent = `${i / 2 + 1}. ${history[i] || ""} ${history[i + 1] || ""}`;
+        row.textContent = `${index / 2 + 1}. ${white} ${black}`;
         output.appendChild(row);
       }
 
       output.scrollTop = output.scrollHeight;
     }
 
-    function updateOpeningName() {
-      const output = document.getElementById("opening-name");
-      const played = chessGame.history().join(" ");
-      let result = "-";
+    function updateChessStatus() {
+      const legal = allLegalMoves(game);
+      const status = document.getElementById("game-status");
+      const turn = document.getElementById("turn-indicator");
 
-      for (const opening of openings) {
-        const moves = opening [dictionary.cambridge](https://dictionary.cambridge.org/dictionary/english/hi)
-          .replace(/[0-9.]/g, "")
-          .replace(/\s+/g, " ")
-          .trim();
+      turn.textContent = game.turn === "w" ? "White" : "Black";
 
-        if (played.startsWith(moves)) {
-          result = opening[0];
-        }
+      if (!legal.length) {
+        status.textContent = inCheck(game, game.turn) ? "Checkmate" : "Stalemate";
+      } else if (inCheck(game, game.turn)) {
+        status.textContent = "Check";
+      } else {
+        status.textContent = "Playing";
       }
-
-      output.textContent = result;
     }
 
-    function renderOpenings() {
+    function updateOpening() {
+      const history = game.history.map(item => item.san).join(" ");
+      let name = "-";
+
+      for (const opening of OPENINGS) {
+        if (history.startsWith(opening.moves)) name = opening.name;
+      }
+
+      document.getElementById("chess-opening-label").textContent = "Opening: " + name;
+    }
+
+    function renderOpenings(filter = "") {
       const output = document.getElementById("openings-list");
       output.innerHTML = "";
 
-      openings.forEach(opening => {
-        const row = document.createElement("div");
-        row.style.padding = "9px";
-        row.style.borderBottom = "1px solid rgba(0,183,255,.12)";
-        row.innerHTML = `
-          <strong>${opening[0]}</strong>
-          <div style="font-size:.82rem;color:#94aed0;margin-top:3px;">${opening [dictionary.cambridge](https://dictionary.cambridge.org/dictionary/english/hi)}</div>
-        `;
-
-        output.appendChild(row);
-      });
-    }
-
-    function newGame() {
-      clearInterval(clockInterval);
-      chessGame.reset();
-      clockWhite = 600;
-      clockBlack = 600;
-      clocksRunning = false;
-      selectedSquare = null;
-      updateClocks();
-      updateChessUI();
-      renderChessBoard();
+      OPENINGS
+        .filter(opening => opening.name.toLowerCase().includes(filter.toLowerCase()))
+        .forEach(opening => {
+          const row = document.createElement("div");
+          row.className = "opening-row";
+          row.innerHTML = `<strong>${opening.name}</strong><div>${opening.moves}</div>`;
+          output.appendChild(row);
+        });
     }
 
     function updateClocks() {
-      document.getElementById("clock-white").textContent = formatClock(clockWhite);
-      document.getElementById("clock-black").textContent = formatClock(clockBlack);
+      document.getElementById("clock-white").textContent = formatTime(clockWhite);
+      document.getElementById("clock-black").textContent = formatTime(clockBlack);
     }
 
-    function formatClock(seconds) {
+    function formatTime(seconds) {
       const minutes = Math.floor(seconds / 60);
-      const remaining = seconds % 60;
-      return `${minutes}:${String(remaining).padStart(2, "0")}`;
+      const secondsLeft = seconds % 60;
+      return `${minutes}:${String(secondsLeft).padStart(2, "0")}`;
     }
 
     function startClocks() {
-      if (clocksRunning) return;
+      if (clocksStarted) return;
+      clocksStarted = true;
 
-      clocksRunning = true;
-      clockInterval = setInterval(() => {
-        if (chessGame.game_over()) {
-          clearInterval(clockInterval);
-          return;
-        }
+      clockTimer = setInterval(() => {
+        if (!game) return;
 
-        if (chessGame.turn() === "w") {
+        if (game.turn === "w") {
           clockWhite = Math.max(0, clockWhite - 1);
         } else {
           clockBlack = Math.max(0, clockBlack - 1);
@@ -1747,186 +2064,905 @@
         updateClocks();
 
         if (clockWhite === 0 || clockBlack === 0) {
-          clearInterval(clockInterval);
+          clearInterval(clockTimer);
           document.getElementById("game-status").textContent =
-            clockWhite === 0 ? "White ran out of time" : "Black ran out of time";
+            clockWhite === 0 ? "White out of time" : "Black out of time";
         }
       }, 1000);
     }
 
-    function initAI() {
+    function resetChess() {
+      clearInterval(clockTimer);
+      clocksStarted = false;
+      clockWhite = 600;
+      clockBlack = 600;
+      selectedSquare = null;
+      game = createGame();
+      updateClocks();
+      updateChessUI();
+      renderChessBoard();
+    }
+
+    function resizeBoard() {
+      const shell = document.querySelector(".board-shell");
+      if (!shell) return;
+
+      const allowed = Math.min(boardSize, shell.parentElement.clientWidth);
+      shell.style.width = allowed + "px";
+      shell.style.height = allowed + "px";
+    }
+
+    function initChess() {
+      game = createGame();
+      renderOpenings();
+      updateClocks();
+      updateChessUI();
+      renderChessBoard();
+
+      document.getElementById("new-game-btn").addEventListener("click", resetChess);
+
+      document.getElementById("flip-board-btn").addEventListener("click", () => {
+        boardFlipped = !boardFlipped;
+        renderChessBoard();
+      });
+
+      document.getElementById("copy-fen-btn").addEventListener("click", () => {
+        const boardText = game.board.map(row => row.map(piece => piece || "--").join(" ")).join("\n");
+        navigator.clipboard?.writeText(boardText);
+        alert("Current board position copied.");
+      });
+
+      document.getElementById("toggle-ai-btn").addEventListener("click", event => {
+        aiEnabled = !aiEnabled;
+        event.target.textContent = aiEnabled ? "AI: On" : "AI: Off";
+      });
+
+      const savedLight = localStorage.getItem("cyclone-board-light") || "#d7eaf8";
+      const savedDark = localStorage.getItem("cyclone-board-dark") || "#3677aa";
+
+      document.getElementById("board-light-color").value = savedLight;
+      document.getElementById("board-dark-color").value = savedDark;
+
+      document.documentElement.style.setProperty("--board-light", savedLight);
+      document.documentElement.style.setProperty("--board-dark", savedDark);
+
+      document.getElementById("save-board-colors").addEventListener("click", () => {
+        const light = document.getElementById("board-light-color").value;
+        const dark = document.getElementById("board-dark-color").value;
+
+        document.documentElement.style.setProperty("--board-light", light);
+        document.documentElement.style.setProperty("--board-dark", dark);
+
+        localStorage.setItem("cyclone-board-light", light);
+        localStorage.setItem("cyclone-board-dark", dark);
+
+        const note = document.getElementById("board-colours-note");
+        note.style.display = "block";
+        setTimeout(() => note.style.display = "none", 1500);
+      });
+
+      document.getElementById("board-size-range").addEventListener("input", event => {
+        boardSize = Number(event.target.value);
+        resizeBoard();
+      });
+
+      document.getElementById("coords-toggle").addEventListener("change", event => {
+        showCoordinates = event.target.checked;
+        renderChessBoard();
+      });
+
+      document.getElementById("opening-search").addEventListener("input", event => {
+        renderOpenings(event.target.value);
+      });
+
+      document.querySelectorAll(".theme-option").forEach(button => {
+        button.addEventListener("click", () => {
+          document.querySelectorAll(".theme-option").forEach(item => item.classList.remove("active"));
+          button.classList.add("active");
+          applyQuickTheme(button.dataset.theme);
+        });
+      });
+
+      window.addEventListener("resize", resizeBoard);
+      setTimeout(resizeBoard, 80);
+    }
+
+    function applyQuickTheme(theme) {
+      const themes = {
+        blue: ["#020816", "#07336d", "#160b3d", "#14b8ff"],
+        purple: ["#120526", "#542080", "#241168", "#c16cff"],
+        green: ["#020d09", "#075434", "#013b24", "#42ff9f"],
+        red: ["#1a0612", "#741e37", "#35101c", "#ff5b70"],
+        orange: ["#160b03", "#70420b", "#412105", "#ffb347"],
+        black: ["#06080c", "#1d2637", "#070a10", "#92a5c8"]
+      };
+
+      const [one, two, three, accent] = themes[theme] || themes.blue;
+      document.documentElement.style.setProperty("--gradient-1", one);
+      document.documentElement.style.setProperty("--gradient-2", two);
+      document.documentElement.style.setProperty("--gradient-3", three);
+      document.documentElement.style.setProperty("--accent", accent);
+      document.body.className = "bg-gradient";
+    }
+
+    /* ------------------------------ AI ------------------------------ */
+
+    function getAIReply(text) {
+      const message = text.toLowerCase().trim();
+      const hour = new Date().getHours();
+      const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : hour < 22 ? "Good evening" : "Yo";
+
+      if (/^(hi|hello|hey|yo|sup|hiya)/.test(message)) {
+        return `${greeting}! What's up? It's ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} right now.`;
+      }
+
+      if (message.includes("time")) {
+        return `${greeting}! The time is ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}.`;
+      }
+
+      if (message.includes("chess") && message.includes("improve")) {
+        return `${greeting}! Play often, review games, practise tactics, learn basic endgames, and slow down before every move.`;
+      }
+
+      if (message.includes("opening")) {
+        return `${greeting}! The Italian Game is a friendly opening to learn: 1.e4 e5 2.Nf3 Nc6 3.Bc4.`;
+      }
+
+      const replies = [
+        `${greeting}! What's on your mind?`,
+        `Yo! What do you want to work on?`,
+        `${greeting}! I’m here—chess, study, sports, music, anything.`,
+        `Hey! Tell me what you need help with.`
+      ];
+
+      return replies[Math.floor(Math.random() * replies.length)];
+    }
+
+    function addAIMessage(text, user = false) {
       const chat = document.getElementById("ai-chat");
+      const line = document.createElement("div");
+      line.className = "ai-message";
+
+      const label = document.createElement("strong");
+      label.style.color = "#ccedff";
+      label.textContent = user ? "You: " : "Cyclone AI: ";
+
+      const bubble = document.createElement("span");
+      bubble.className = "message-bubble";
+      bubble.textContent = text;
+
+      if (user) {
+        bubble.style.background = localStorage.getItem("cyclone-message-colour") || "#168ad1";
+        const style = localStorage.getItem("cyclone-message-style") || "normal";
+        bubble.style.fontWeight = style.includes("bold") ? "700" : "400";
+        bubble.style.fontStyle = style.includes("italic") ? "italic" : "normal";
+      } else {
+        bubble.style.background = "#234978";
+      }
+
+      line.append(label, bubble);
+      chat.appendChild(line);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function initAI() {
       const input = document.getElementById("ai-input");
       const send = document.getElementById("ai-send");
 
-      function greeting() {
-        const hour = new Date().getHours();
+      function sendAI() {
+        const text = input.value.trim();
+        if (!text) return;
 
-        if (hour >= 5 && hour < 12) return "Good morning";
-        if (hour >= 12 && hour < 17) return "Good afternoon";
-        if (hour >= 17 && hour < 22) return "Good evening";
-        return "Hey";
+        addAIMessage(text, true);
+        input.value = "";
+
+        setTimeout(() => addAIMessage(getAIReply(text), false), 300);
       }
 
-      function reply(text) {
-        const lower = text.toLowerCase();
-        const hello = greeting();
+      send.addEventListener("click", sendAI);
+      input.addEventListener("keydown", event => {
+        if (event.key === "Enter") sendAI();
+      });
+    }
 
-        if (/^(hi|hello|hey|yo|sup|hiya)\b/.test(lower)) {
-          return `${hello}! What's up? It's ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} right now.`;
+    /* ------------------------------ Content data ------------------------------ */
+
+    const subjects = [
+      {
+        name: "🧮 Maths",
+        content: `
+          <h3>Maths</h3>
+          <p>Build foundations in arithmetic, algebra, geometry, graphs, statistics, and probability.</p>
+          <h4>Key areas</h4>
+          <ul>
+            <li>Fractions, decimals, percentages, and ratio</li>
+            <li>Algebraic expressions and equations</li>
+            <li>Angles, shapes, area, and volume</li>
+            <li>Graphs, averages, and probability</li>
+          </ul>
+          <h4>Practice routine</h4>
+          <ol>
+            <li>Warm up with five quick number questions.</li>
+            <li>Practise one algebra topic for fifteen minutes.</li>
+            <li>Do geometry or graph questions.</li>
+            <li>Check mistakes and write down what to revisit.</li>
+          </ol>
+        `
+      },
+      {
+        name: "📖 English",
+        content: `
+          <h3>English</h3>
+          <p>Improve reading, writing, grammar, vocabulary, and analysis.</p>
+          <h4>Practice routine</h4>
+          <ol>
+            <li>Read a short article or story section.</li>
+            <li>Summarise it in three sentences.</li>
+            <li>Learn five useful words in context.</li>
+            <li>Write one paragraph using a clear topic sentence.</li>
+          </ol>
+        `
+      },
+      {
+        name: "🌍 Languages",
+        content: `
+          <h3>Languages</h3>
+          <p>Learn vocabulary, grammar, speaking, listening, reading, and writing.</p>
+          <h4>Daily routine</h4>
+          <ol>
+            <li>Review vocabulary with flashcards.</li>
+            <li>Listen to a short dialogue.</li>
+            <li>Repeat phrases out loud.</li>
+            <li>Write three sentences about your day.</li>
+          </ol>
+        `
+      },
+      {
+        name: "🔬 Science",
+        content: `
+          <h3>Science</h3>
+          <p>Explore biology, chemistry, physics, experiments, data, and evidence.</p>
+          <h4>Key topics</h4>
+          <ul>
+            <li>Cells, organisms, and ecosystems</li>
+            <li>Atoms, elements, and reactions</li>
+            <li>Forces, energy, electricity, and waves</li>
+            <li>Scientific investigations and conclusions</li>
+          </ul>
+        `
+      },
+      {
+        name: "🏛️ History",
+        content: `
+          <h3>History</h3>
+          <p>Learn about civilisations, events, people, sources, causes, and effects.</p>
+          <h4>Study routine</h4>
+          <ol>
+            <li>Create a timeline.</li>
+            <li>Identify causes and consequences.</li>
+            <li>Compare perspectives from different people.</li>
+            <li>Use evidence in written answers.</li>
+          </ol>
+        `
+      },
+      {
+        name: "🌎 Geography",
+        content: `
+          <h3>Geography</h3>
+          <p>Study physical landscapes, population, countries, climate, maps, and sustainability.</p>
+          <h4>Key areas</h4>
+          <ul>
+            <li>Continents, oceans, countries, and capitals</li>
+            <li>Weather, climate, biomes, and hazards</li>
+            <li>Population, cities, migration, and development</li>
+            <li>Map skills and environmental challenges</li>
+          </ul>
+        `
+      },
+      {
+        name: "💻 Computing",
+        content: `
+          <h3>Computing</h3>
+          <p>Learn programming, algorithms, web development, security, and digital skills.</p>
+          <h4>Practice routine</h4>
+          <ol>
+            <li>Learn one concept: variables, conditions, loops, or functions.</li>
+            <li>Write a small program.</li>
+            <li>Debug one problem.</li>
+            <li>Add one feature to a project.</li>
+          </ol>
+        `
+      },
+      {
+        name: "🎨 Art & Design",
+        content: `
+          <h3>Art & Design</h3>
+          <p>Develop drawing, colour, composition, perspective, layout, and design skills.</p>
+          <h4>Practice routine</h4>
+          <ol>
+            <li>Draw basic forms such as cubes and spheres.</li>
+            <li>Practise shading from light to dark.</li>
+            <li>Try one perspective exercise.</li>
+            <li>Create a small poster, logo, or illustration.</li>
+          </ol>
+        `
+      },
+      {
+        name: "💰 Economics",
+        content: `
+          <h3>Economics</h3>
+          <p>Study choices, markets, supply and demand, inflation, employment, and trade.</p>
+          <h4>Key ideas</h4>
+          <ul>
+            <li>Scarcity and opportunity cost</li>
+            <li>Supply, demand, and prices</li>
+            <li>Government, businesses, and consumers</li>
+            <li>Inflation, unemployment, and growth</li>
+          </ul>
+        `
+      },
+      {
+        name: "🧠 Psychology",
+        content: `
+          <h3>Psychology</h3>
+          <p>Explore behaviour, memory, development, social influence, and research methods.</p>
+          <h4>Study routine</h4>
+          <ol>
+            <li>Learn key terms.</li>
+            <li>Compare theories.</li>
+            <li>Review a study and its method.</li>
+            <li>Practise evaluating evidence.</li>
+          </ol>
+        `
+      }
+    ];
+
+    const instruments = [
+      {
+        name: "🎸 Guitar",
+        content: `
+          <h3>Guitar</h3>
+          <p>Learn chords, rhythm, scales, strumming, fingerpicking, and songs.</p>
+          <h4>Beginner routine</h4>
+          <ol>
+            <li>Tune the guitar.</li>
+            <li>Practise C, G, D, Em, and Am.</li>
+            <li>Switch between two chords slowly.</li>
+            <li>Use a down-up strumming pattern with a metronome.</li>
+            <li>Learn one easy song section.</li>
+          </ol>
+        `
+      },
+      {
+        name: "🎹 Piano",
+        content: `
+          <h3>Piano</h3>
+          <p>Learn notes, scales, chords, melodies, rhythm, and reading music.</p>
+          <h4>Beginner routine</h4>
+          <ol>
+            <li>Find middle C.</li>
+            <li>Play the C major scale slowly.</li>
+            <li>Learn C, F, and G major chords.</li>
+            <li>Practise melody with right hand.</li>
+            <li>Add simple left-hand chords.</li>
+          </ol>
+        `
+      },
+      {
+        name: "🥁 Drums",
+        content: `
+          <h3>Drums</h3>
+          <p>Learn rhythm, coordination, grooves, fills, timing, and dynamics.</p>
+          <h4>First rock beat</h4>
+          <ul>
+            <li>Hi-hat: eighth notes</li>
+            <li>Kick: beats one and three</li>
+            <li>Snare: beats two and four</li>
+          </ul>
+          <h4>Routine</h4>
+          <ol>
+            <li>Play slowly with a metronome.</li>
+            <li>Keep the hi-hat steady.</li>
+            <li>Add kick, then snare.</li>
+            <li>Increase tempo only when it feels controlled.</li>
+          </ol>
+        `
+      },
+      {
+        name: "🎻 Violin",
+        content: `
+          <h3>Violin</h3>
+          <p>Learn posture, bowing, intonation, open strings, and first position.</p>
+          <h4>Routine</h4>
+          <ol>
+            <li>Check relaxed posture.</li>
+            <li>Play long bows on open strings.</li>
+            <li>Practise G, D, A, and E strings.</li>
+            <li>Learn simple first-position finger patterns.</li>
+          </ol>
+        `
+      },
+      {
+        name: "🎷 Saxophone",
+        content: `
+          <h3>Saxophone</h3>
+          <p>Learn embouchure, breathing, fingering, tone, articulation, and scales.</p>
+          <h4>Routine</h4>
+          <ol>
+            <li>Check reed and mouthpiece.</li>
+            <li>Play long tones.</li>
+            <li>Practise easy scales.</li>
+            <li>Work on clean tonguing.</li>
+          </ol>
+        `
+      },
+      {
+        name: "🎺 Trumpet",
+        content: `
+          <h3>Trumpet</h3>
+          <p>Learn breathing, buzzing, embouchure, valves, tone, and range.</p>
+          <h4>Routine</h4>
+          <ol>
+            <li>Practise relaxed breathing.</li>
+            <li>Buzz gently without forcing.</li>
+            <li>Play long comfortable notes.</li>
+            <li>Practise basic valve patterns.</li>
+          </ol>
+        `
+      },
+      {
+        name: "🪕 Ukulele",
+        content: `
+          <h3>Ukulele</h3>
+          <p>Learn easy chords, simple strumming, and quick songs.</p>
+          <h4>Starter chords</h4>
+          <p>C, F, G, Am, and Dm are useful beginner chords.</p>
+          <h4>Routine</h4>
+          <ol>
+            <li>Tune the ukulele.</li>
+            <li>Practise chord shapes.</li>
+            <li>Switch between C, F, G, and Am.</li>
+            <li>Use a steady simple strum.</li>
+          </ol>
+        `
+      },
+      {
+        name: "🎵 Flute",
+        content: `
+          <h3>Flute</h3>
+          <p>Learn breath control, embouchure, fingering, tone, and articulation.</p>
+          <h4>Routine</h4>
+          <ol>
+            <li>Practise a steady air stream.</li>
+            <li>Play long tones.</li>
+            <li>Learn B, A, and G.</li>
+            <li>Play short melodies slowly.</li>
+          </ol>
+        `
+      }
+    ];
+
+    const sports = [
+      {
+        name: "⚽ Football",
+        content: `
+          <h3>Football</h3>
+          <p>A team game where you score by getting the ball into the opponent's goal.</p>
+          <h4>Basic rules</h4>
+          <ul>
+            <li>Two teams normally play with eleven players.</li>
+            <li>Outfield players cannot use their hands deliberately.</li>
+            <li>The team with more goals wins.</li>
+            <li>Fouls may lead to free kicks, penalties, or cards.</li>
+          </ul>
+          <h4>Beginner routine</h4>
+          <ol>
+            <li>Warm up with jogging and dynamic stretches.</li>
+            <li>Dribble through cones.</li>
+            <li>Pass against a wall.</li>
+            <li>Practise shooting with both feet.</li>
+            <li>Play a small-sided game.</li>
+          </ol>
+        `
+      },
+      {
+        name: "🏀 Basketball",
+        content: `
+          <h3>Basketball</h3>
+          <p>Score by shooting the ball through the opponent's hoop.</p>
+          <h4>Basic rules</h4>
+          <ul>
+            <li>Dribble while moving with the ball.</li>
+            <li>Two points for most baskets, three beyond the arc.</li>
+            <li>Free throws are worth one point.</li>
+            <li>Avoid illegal contact and travelling.</li>
+          </ul>
+          <h4>Beginner routine</h4>
+          <ol>
+            <li>Stationary dribbling with both hands.</li>
+            <li>Right and left layups.</li>
+            <li>Close-range form shooting.</li>
+            <li>Defensive slides and short sprints.</li>
+          </ol>
+        `
+      },
+      {
+        name: "🏏 Cricket",
+        content: `
+          <h3>Cricket</h3>
+          <p>Batters score runs while bowlers and fielders try to take wickets.</p>
+          <h4>Basic rules</h4>
+          <ul>
+            <li>An over has six legal deliveries.</li>
+            <li>Runs come from running or boundaries.</li>
+            <li>Wickets include bowled, caught, and run out.</li>
+            <li>The team with more runs wins.</li>
+          </ul>
+          <h4>Beginner routine</h4>
+          <ol>
+            <li>Practise batting stance and footwork.</li>
+            <li>Shadow-bat straight drives.</li>
+            <li>Work on catching with soft hands.</li>
+            <li>Bowl at a target to improve line and length.</li>
+          </ol>
+        `
+      },
+      {
+        name: "🎾 Tennis",
+        content: `
+          <h3>Tennis</h3>
+          <p>Hit the ball over the net and into the opponent's court.</p>
+          <h4>Basic rules</h4>
+          <ul>
+            <li>Points usually count 15, 30, 40, game.</li>
+            <li>Serves go diagonally into the service box.</li>
+            <li>Ball landing outside the lines is out.</li>
+          </ul>
+          <h4>Beginner routine</h4>
+          <ol>
+            <li>Practise forehand and backhand swings.</li>
+            <li>Work on ready position and footwork.</li>
+            <li>Practise serving tosses.</li>
+            <li>Rally for consistency before hitting harder.</li>
+          </ol>
+        `
+      },
+      {
+        name: "🏃 Athletics",
+        content: `
+          <h3>Athletics</h3>
+          <p>Athletics includes running, jumping, and throwing events.</p>
+          <h4>Beginner routine</h4>
+          <ol>
+            <li>Easy jog for ten minutes.</li>
+            <li>Do movement drills.</li>
+            <li>Complete short controlled intervals.</li>
+            <li>Add strength and mobility work.</li>
+            <li>Take recovery days.</li>
+          </ol>
+        `
+      },
+      {
+        name: "🏊 Swimming",
+        content: `
+          <h3>Swimming</h3>
+          <p>Learn freestyle, backstroke, breaststroke, and butterfly.</p>
+          <h4>Beginner routine</h4>
+          <ol>
+            <li>Warm up with easy lengths.</li>
+            <li>Practise body position and breathing.</li>
+            <li>Do short technique drills.</li>
+            <li>Swim controlled lengths with rest.</li>
+          </ol>
+        `
+      },
+      {
+        name: "🏐 Volleyball",
+        content: `
+          <h3>Volleyball</h3>
+          <p>Send the ball over the net and make it land on the opponent's side.</p>
+          <h4>Basic rules</h4>
+          <ul>
+            <li>Teams usually have up to three contacts.</li>
+            <li>Players rotate after winning a serve.</li>
+            <li>Rallies end when the ball lands or a fault happens.</li>
+          </ul>
+          <h4>Routine</h4>
+          <ol>
+            <li>Forearm passing.</li>
+            <li>Overhead setting.</li>
+            <li>Serving practice.</li>
+            <li>Small-sided rallies.</li>
+          </ol>
+        `
+      },
+      {
+        name: "🏸 Badminton",
+        content: `
+          <h3>Badminton</h3>
+          <p>Use a racket to hit a shuttlecock over the net.</p>
+          <h4>Basic rules</h4>
+          <ul>
+            <li>Games commonly use rally scoring to twenty-one.</li>
+            <li>The shuttle must land in the court.</li>
+            <li>Serves go diagonally.</li>
+          </ul>
+          <h4>Routine</h4>
+          <ol>
+            <li>Practise grip and ready position.</li>
+            <li>Work on clears and drops.</li>
+            <li>Practise court footwork.</li>
+            <li>Finish with short rallies.</li>
+          </ol>
+        `
+      },
+      {
+        name: "🏒 Hockey",
+        content: `
+          <h3>Hockey</h3>
+          <p>Use a stick to move a ball or puck into the opponent's goal.</p>
+          <h4>Routine</h4>
+          <ol>
+            <li>Practise stick control.</li>
+            <li>Dribble through cones.</li>
+            <li>Pass with a partner.</li>
+            <li>Practise shooting and defensive position.</li>
+          </ol>
+        `
+      },
+      {
+        name: "🏉 Rugby",
+        content: `
+          <h3>Rugby</h3>
+          <p>Carry, pass, and kick an oval ball to score tries and goals.</p>
+          <h4>Basic rules</h4>
+          <ul>
+            <li>Passes must go backwards or sideways.</li>
+            <li>The ball can be kicked forwards.</li>
+            <li>Tackles must be safe and below the shoulders.</li>
+          </ul>
+          <h4>Routine</h4>
+          <ol>
+            <li>Practise catching and passing.</li>
+            <li>Work on sprinting and agility.</li>
+            <li>Learn safe tackle technique with a qualified coach.</li>
+            <li>Play small-sided games.</li>
+          </ol>
+        `
+      }
+    ];
+
+    function initSelectionList(listId, contentId, data) {
+      const list = document.getElementById(listId);
+      const content = document.getElementById(contentId);
+
+      data.forEach((item, index) => {
+        const button = document.createElement("button");
+        button.className = "selection-item";
+        button.textContent = item.name;
+
+        button.addEventListener("click", () => {
+          list.querySelectorAll(".selection-item").forEach(element => element.classList.remove("active"));
+          button.classList.add("active");
+          content.innerHTML = item.content;
+        });
+
+        list.appendChild(button);
+
+        if (index === 0 && window.innerWidth > 820) {
+          button.classList.add("active");
+          content.innerHTML = item.content;
         }
+      });
+    }
 
-        if (lower.includes("time")) {
-          return `${hello}! It's ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} right now.`;
-        }
+    /* ------------------------------ Chat ------------------------------ */
 
-        if (lower.includes("chess") && lower.includes("improve")) {
-          return `${hello}! Play regularly, review your games, practise tactics, and study basic endgames.`;
-        }
+    function initChat() {
+      const panel = document.getElementById("conversations-panel");
+      const messages = document.getElementById("chat-messages");
+      const input = document.getElementById("chat-input");
 
-        if (lower.includes("opening")) {
-          return `${hello}! Try the Italian Game as a beginner: 1.e4 e5 2.Nf3 Nc6 3.Bc4.`;
-        }
+      let conversations = [];
+      let selectedConversation = null;
 
-        const replies = [
-          `${hello}! What's up?`,
-          `${hello}! What are you working on?`,
-          `Yo! I'm here. What do you want to learn?`,
-          `Hey! Want to talk chess, study, sports, or music?`
-        ];
-
-        return replies[Math.floor(Math.random() * replies.length)];
+      try {
+        conversations = JSON.parse(localStorage.getItem("cyclone-conversations") || "[]");
+      } catch {
+        conversations = [];
       }
 
-      function addMessage(text, user) {
-        const line = document.createElement("div");
-        line.style.marginBottom = "8px";
+      function saveConversations() {
+        localStorage.setItem("cyclone-conversations", JSON.stringify(conversations));
+      }
 
-        const bubble = document.createElement("span");
-        bubble.className = "msg-bubble";
-        bubble.style.background = user
-          ? localStorage.getItem("cyclone-msg-color") || "#087ed3"
-          : "#243f70";
-        bubble.textContent = text;
+      function renderConversations() {
+        panel.innerHTML = "";
 
-        const label = document.createElement("strong");
-        label.textContent = user ? "You: " : "Cyclone AI: ";
-        label.style.color = "#d7ecff";
+        if (!conversations.length) {
+          panel.innerHTML = '<div style="padding:12px;color:#91a9c7;">No conversations yet.</div>';
+          return;
+        }
 
-        line.append(label, bubble);
-        chat.appendChild(line);
-        chat.scrollTop = chat.scrollHeight;
+        conversations.forEach(conversation => {
+          const button = document.createElement("button");
+          button.className = "selection-item conversation" +
+            (conversation.id === selectedConversation ? " active" : "");
+          button.textContent = (conversation.type === "group" ? "👥 " : "👤 ") + conversation.name;
+
+          button.addEventListener("click", () => {
+            selectedConversation = conversation.id;
+            renderConversations();
+            renderMessages();
+          });
+
+          panel.appendChild(button);
+        });
+      }
+
+      function renderMessages() {
+        messages.innerHTML = "";
+
+        const conversation = conversations.find(item => item.id === selectedConversation);
+
+        if (!conversation) {
+          messages.innerHTML = '<div class="muted">Select or create a conversation.</div>';
+          return;
+        }
+
+        conversation.messages.forEach(message => {
+          const line = document.createElement("div");
+          const isSelf = message.sender === (currentUser?.username || "Guest");
+
+          line.className = "chat-line " + (isSelf ? "self" : "other");
+
+          const sender = document.createElement("span");
+          sender.className = "chat-sender";
+          sender.textContent = message.sender;
+
+          const bubble = document.createElement("span");
+          bubble.className = "message-bubble";
+          bubble.textContent = message.text;
+          bubble.style.background = isSelf
+            ? localStorage.getItem("cyclone-message-colour") || "#168ad1"
+            : "#234978";
+
+          line.append(sender, bubble);
+          messages.appendChild(line);
+        });
+
+        messages.scrollTop = messages.scrollHeight;
+      }
+
+      function createConversation(type) {
+        const name = prompt(type === "group" ? "Group name:" : "Username:");
+        if (!name) return;
+
+        const conversation = {
+          id: type + "-" + Date.now(),
+          type,
+          name,
+          messages: []
+        };
+
+        conversations.push(conversation);
+        selectedConversation = conversation.id;
+        saveConversations();
+        renderConversations();
+        renderMessages();
       }
 
       function sendMessage() {
         const text = input.value.trim();
-        if (!text) return;
+        if (!text || !selectedConversation) return;
 
-        addMessage(text, true);
+        const conversation = conversations.find(item => item.id === selectedConversation);
+        conversation.messages.push({
+          sender: currentUser?.username || "Guest",
+          text
+        });
+
         input.value = "";
-
-        setTimeout(() => {
-          addMessage(reply(text), false);
-        }, 300);
+        saveConversations();
+        renderMessages();
       }
 
-      send.addEventListener("click", sendMessage);
+      document.getElementById("new-dm-btn").addEventListener("click", () => createConversation("dm"));
+      document.getElementById("new-group-btn").addEventListener("click", () => createConversation("group"));
+      document.getElementById("chat-send").addEventListener("click", sendMessage);
+
       input.addEventListener("keydown", event => {
         if (event.key === "Enter") sendMessage();
       });
+
+      renderConversations();
+      renderMessages();
     }
 
-    function initMessageSettings() {
-      const color = document.getElementById("msg-color");
+    /* ------------------------------ Profile ------------------------------ */
+
+    function initProfile() {
+      const colour = document.getElementById("msg-colour");
       const style = document.getElementById("msg-style");
-      const preview = document.querySelector("#msg-preview .msg-bubble");
-      const savedColor = localStorage.getItem("cyclone-msg-color") || "#087ed3";
-      const savedStyle = localStorage.getItem("cyclone-msg-style") || "normal";
+      const preview = document.getElementById("message-preview");
 
-      color.value = savedColor;
-      style.value = savedStyle;
+      colour.value = localStorage.getItem("cyclone-message-colour") || "#168ad1";
+      style.value = localStorage.getItem("cyclone-message-style") || "normal";
 
-      function apply() {
-        document.documentElement.style.setProperty("--user-msg-color", color.value);
-        preview.style.background = color.value;
-        preview.className = "msg-bubble style-" + style.value;
+      function updateMessagePreview() {
+        preview.style.background = colour.value;
+        preview.style.fontWeight = style.value.includes("bold") ? "700" : "400";
+        preview.style.fontStyle = style.value.includes("italic") ? "italic" : "normal";
       }
 
-      color.addEventListener("input", apply);
-      style.addEventListener("change", apply);
+      colour.addEventListener("input", updateMessagePreview);
+      style.addEventListener("change", updateMessagePreview);
 
-      document.getElementById("save-msg-style").addEventListener("click", () => {
-        localStorage.setItem("cyclone-msg-color", color.value);
-        localStorage.setItem("cyclone-msg-style", style.value);
-        apply();
+      document.getElementById("save-message-settings").addEventListener("click", () => {
+        localStorage.setItem("cyclone-message-colour", colour.value);
+        localStorage.setItem("cyclone-message-style", style.value);
+        updateMessagePreview();
 
-        const note = document.getElementById("msg-saved-note");
+        const note = document.getElementById("message-note");
         note.style.display = "inline";
         setTimeout(() => note.style.display = "none", 1400);
       });
 
-      apply();
-    }
+      updateMessagePreview();
 
-    function initBackgroundSettings() {
       const type = document.getElementById("bg-type");
-      const colorSection = document.getElementById("bg-color-section");
-      const gradientSection = document.getElementById("bg-gradient-section");
-      const imageSection = document.getElementById("bg-image-section");
-      const color = document.getElementById("bg-color");
-      const grad1 = document.getElementById("bg-grad1");
-      const grad2 = document.getElementById("bg-grad2");
-      const grad3 = document.getElementById("bg-grad3");
-      const preview = document.getElementById("bg-preview");
-      let imageData = localStorage.getItem("cyclone-bg-image") || "";
+      const solid = document.getElementById("solid-colour");
+      const gradOne = document.getElementById("gradient-1");
+      const gradTwo = document.getElementById("gradient-2");
+      const gradThree = document.getElementById("gradient-3");
+      const previewBackground = document.getElementById("background-preview");
 
-      const savedType = localStorage.getItem("cyclone-bg-type") || "gradient";
-      type.value = savedType;
-      color.value = localStorage.getItem("cyclone-bg-color") || "#020617";
-      grad1.value = localStorage.getItem("cyclone-bg-grad1") || "#020617";
-      grad2.value = localStorage.getItem("cyclone-bg-grad2") || "#071b3d";
-      grad3.value = localStorage.getItem("cyclone-bg-grad3") || "#160c42";
+      let imageData = localStorage.getItem("cyclone-background-image") || "";
 
-      function updateSections() {
-        colorSection.style.display = type.value === "color" ? "block" : "none";
-        gradientSection.style.display = type.value === "gradient" ? "flex" : "none";
-        imageSection.style.display = type.value === "image" ? "block" : "none";
+      type.value = localStorage.getItem("cyclone-background-type") || "default";
+      solid.value = localStorage.getItem("cyclone-background-solid") || "#020816";
+      gradOne.value = localStorage.getItem("cyclone-background-gradient-one") || "#020816";
+      gradTwo.value = localStorage.getItem("cyclone-background-gradient-two") || "#07336d";
+      gradThree.value = localStorage.getItem("cyclone-background-gradient-three") || "#160b3d";
+
+      function showBackgroundControls() {
+        document.getElementById("solid-controls").style.display = type.value === "solid" ? "block" : "none";
+        document.getElementById("gradient-controls").style.display = type.value === "gradient" ? "block" : "none";
+        document.getElementById("image-controls").style.display = type.value === "image" ? "block" : "none";
       }
 
-      function apply() {
-        document.body.classList.remove("bg-color", "bg-gradient", "bg-image");
+      function applyBackground() {
+        document.body.classList.remove("bg-solid", "bg-gradient", "bg-image");
 
-        if (type.value === "color") {
-          document.documentElement.style.setProperty("--custom-bg", color.value);
-          document.body.classList.add("bg-color");
-          preview.style.background = color.value;
-        }
-
-        if (type.value === "gradient") {
-          document.documentElement.style.setProperty("--gradient-1", grad1.value);
-          document.documentElement.style.setProperty("--gradient-2", grad2.value);
-          document.documentElement.style.setProperty("--gradient-3", grad3.value);
+        if (type.value === "solid") {
+          document.documentElement.style.setProperty("--solid-bg", solid.value);
+          document.body.classList.add("bg-solid");
+          previewBackground.style.background = solid.value;
+        } else if (type.value === "gradient") {
+          document.documentElement.style.setProperty("--gradient-1", gradOne.value);
+          document.documentElement.style.setProperty("--gradient-2", gradTwo.value);
+          document.documentElement.style.setProperty("--gradient-3", gradThree.value);
           document.body.classList.add("bg-gradient");
-          preview.style.background = `linear-gradient(135deg, ${grad1.value}, ${grad2.value}, ${grad3.value})`;
-        }
-
-        if (type.value === "image" && imageData) {
+          previewBackground.style.background = `linear-gradient(135deg, ${gradOne.value}, ${gradTwo.value}, ${gradThree.value})`;
+        } else if (type.value === "image" && imageData) {
           document.documentElement.style.setProperty("--custom-image", `url("${imageData}")`);
           document.body.classList.add("bg-image");
-          preview.style.background = `url("${imageData}") center/cover`;
+          previewBackground.style.background = `url("${imageData}") center/cover`;
+        } else {
+          previewBackground.style.background = "linear-gradient(135deg, #020816, #07336d, #160b3d)";
         }
       }
 
       type.addEventListener("change", () => {
-        updateSections();
-        apply();
+        showBackgroundControls();
+        applyBackground();
       });
 
-      [color, grad1, grad2, grad3].forEach(input => {
-        input.addEventListener("input", apply);
+      [solid, gradOne, gradTwo, gradThree].forEach(input => {
+        input.addEventListener("input", applyBackground);
       });
 
-      document.getElementById("bg-image-input").addEventListener("change", event => {
+      document.getElementById("background-image-input").addEventListener("change", event => {
         const file = event.target.files[0];
         if (!file) return;
 
@@ -1934,198 +2970,50 @@
 
         reader.onload = () => {
           imageData = reader.result;
-          localStorage.setItem("cyclone-bg-image", imageData);
+          localStorage.setItem("cyclone-background-image", imageData);
           type.value = "image";
-          updateSections();
-          apply();
+          showBackgroundControls();
+          applyBackground();
         };
 
         reader.readAsDataURL(file);
       });
 
-      document.getElementById("save-bg-settings").addEventListener("click", () => {
-        localStorage.setItem("cyclone-bg-type", type.value);
-        localStorage.setItem("cyclone-bg-color", color.value);
-        localStorage.setItem("cyclone-bg-grad1", grad1.value);
-        localStorage.setItem("cyclone-bg-grad2", grad2.value);
-        localStorage.setItem("cyclone-bg-grad3", grad3.value);
-        apply();
+      document.getElementById("save-background-settings").addEventListener("click", () => {
+        localStorage.setItem("cyclone-background-type", type.value);
+        localStorage.setItem("cyclone-background-solid", solid.value);
+        localStorage.setItem("cyclone-background-gradient-one", gradOne.value);
+        localStorage.setItem("cyclone-background-gradient-two", gradTwo.value);
+        localStorage.setItem("cyclone-background-gradient-three", gradThree.value);
 
-        const note = document.getElementById("bg-saved-note");
+        applyBackground();
+
+        const note = document.getElementById("background-note");
         note.style.display = "inline";
         setTimeout(() => note.style.display = "none", 1400);
       });
 
-      updateSections();
-      apply();
+      showBackgroundControls();
+      applyBackground();
     }
 
-    function initContentLists() {
-      const instrumentItems = document.querySelectorAll("#instruments-list .convo-item");
-      const instrumentNames = ["Guitar", "Piano", "Drums", "Violin", "Saxophone", "Trumpet", "Ukulele", "Flute"];
-
-      instrumentItems.forEach((item, index) => {
-        item.addEventListener("click", () => {
-          instrumentItems.forEach(element => element.classList.remove("active"));
-          item.classList.add("active");
-          document.getElementById("instruments-content").innerHTML = instrumentContent[instrumentNames[index]];
-        });
-      });
-
-      const sportItems = document.querySelectorAll("#sports-list .convo-item");
-      const sportNames = ["Football", "Basketball", "Cricket", "Tennis", "Athletics", "Swimming", "Volleyball", "Badminton", "Hockey", "Rugby"];
-
-      sportItems.forEach((item, index) => {
-        item.addEventListener("click", () => {
-          sportItems.forEach(element => element.classList.remove("active"));
-          item.classList.add("active");
-          document.getElementById("sports-content").innerHTML = sportContent[sportNames[index]];
-        });
-      });
-
-      const studyItems = document.querySelectorAll("#study-list .convo-item");
-      const studyNames = ["Maths", "English", "Languages", "Science", "History", "Geography", "Computing", "Art & Design", "Economics", "Psychology"];
-
-      studyItems.forEach((item, index) => {
-        item.addEventListener("click", () => {
-          studyItems.forEach(element => element.classList.remove("active"));
-          item.classList.add("active");
-          document.getElementById("study-content").innerHTML = studyContent[studyNames[index]];
-        });
-      });
-    }
-
-    function initChat() {
-      const panel = document.getElementById("conversations-panel");
-      const messages = document.getElementById("chat-messages");
-      const input = document.getElementById("chat-input");
-      const send = document.getElementById("chat-send");
-
-      let conversations = JSON.parse(localStorage.getItem("cyclone-conversations") || "[]");
-      let selectedId = null;
-
-      function save() {
-        localStorage.setItem("cyclone-conversations", JSON.stringify(conversations));
-      }
-
-      function renderConversations() {
-        panel.innerHTML = conversations.length
-          ? conversations.map(item => `
-              <div class="convo-item ${item.id === selectedId ? "active" : ""}" data-id="${item.id}">
-                ${item.type === "dm" ? "👤" : "👥"} ${item.name}
-              </div>
-            `).join("")
-          : '<div style="padding:10px;color:#9eb2d0;">No conversations yet.</div>';
-
-        panel.querySelectorAll(".convo-item").forEach(item => {
-          item.addEventListener("click", () => {
-            selectedId = item.dataset.id;
-            renderConversations();
-            renderMessages();
-          });
-        });
-      }
-
-      function renderMessages() {
-        messages.innerHTML = "";
-
-        const conversation = conversations.find(item => item.id === selectedId);
-
-        if (!conversation) {
-          messages.innerHTML = '<div style="color:#9eb2d0;">Create or select a conversation.</div>';
-          return;
-        }
-
-        conversation.messages.forEach(message => {
-          const line = document.createElement("div");
-          line.style.marginBottom = "8px";
-          line.innerHTML = `<small style="color:#88a4c8;">${message.sender}</small><br>`;
-
-          const bubble = document.createElement("span");
-          bubble.className = "msg-bubble";
-          bubble.style.background = message.sender === (currentUser?.username || "Guest")
-            ? localStorage.getItem("cyclone-msg-color") || "#087ed3"
-            : "#243f70";
-          bubble.textContent = message.text;
-
-          line.appendChild(bubble);
-          messages.appendChild(line);
-        });
-
-        messages.scrollTop = messages.scrollHeight;
-      }
-
-      function sendMessage() {
-        const text = input.value.trim();
-        if (!text || !selectedId) return;
-
-        const conversation = conversations.find(item => item.id === selectedId);
-        conversation.messages.push({
-          sender: currentUser?.username || "Guest",
-          text
-        });
-
-        input.value = "";
-        save();
-        renderMessages();
-      }
-
-      send.addEventListener("click", sendMessage);
-      input.addEventListener("keydown", event => {
-        if (event.key === "Enter") sendMessage();
-      });
-
-      document.getElementById("new-dm-btn").addEventListener("click", () => {
-        const name = prompt("Username:");
-        if (!name) return;
-
-        const conversation = {
-          id: "dm-" + Date.now(),
-          type: "dm",
-          name,
-          messages: []
-        };
-
-        conversations.push(conversation);
-        selectedId = conversation.id;
-        save();
-        renderConversations();
-        renderMessages();
-      });
-
-      document.getElementById("new-group-btn").addEventListener("click", () => {
-        const name = prompt("Group name:");
-        if (!name) return;
-
-        const conversation = {
-          id: "group-" + Date.now(),
-          type: "group",
-          name,
-          messages: []
-        };
-
-        conversations.push(conversation);
-        selectedId = conversation.id;
-        save();
-        renderConversations();
-        renderMessages();
-      });
-
-      renderConversations();
-      renderMessages();
-    }
+    /* ------------------------------ Init ------------------------------ */
 
     document.addEventListener("DOMContentLoaded", () => {
-      initAuth();
-      initTabs();
+      restoreUser();
+      initNavigation();
+      updateHeaderTime();
+      setInterval(updateHeaderTime, 1000);
+
       initChess();
       initAI();
-      initMessageSettings();
-      initBackgroundSettings();
-      initContentLists();
       initChat();
+      initProfile();
+
+      initSelectionList("study-list", "study-content", subjects);
+      initSelectionList("instrument-list", "instrument-content", instruments);
+      initSelectionList("sports-list", "sports-content", sports);
     });
   </script>
 </body>
 </html>
-```

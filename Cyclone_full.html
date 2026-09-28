@@ -187,74 +187,6 @@
       background: #0e1220;
     }
 
-    /* ====== MESSAGE BUBBLES ====== */
-    .msg-bubble {
-      display: inline-block;
-      padding: 8px 12px;
-      border-radius: 12px;
-      background: var(--user-msg-color, #6366f1);
-      color: #fff;
-      max-width: 100%;
-      word-wrap: break-word;
-      font-size: 0.95rem;
-    }
-
-    .msg-bubble.style-normal {
-      font-weight: 400;
-      font-style: normal;
-    }
-    .msg-bubble.style-bold {
-      font-weight: 700;
-      font-style: normal;
-    }
-    .msg-bubble.style-italic {
-      font-weight: 400;
-      font-style: italic;
-    }
-    .msg-bubble.style-bold-italic {
-      font-weight: 700;
-      font-style: italic;
-    }
-
-    /* ====== CHAT PANEL ====== */
-    .convo-item {
-      padding: 10px;
-      border-bottom: 1px solid #222;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .convo-item:hover {
-      background: rgba(255,255,255,0.04);
-    }
-    .convo-item.active {
-      background: rgba(99,102,241,0.2);
-    }
-
-    #chat-messages {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .chat-line {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      max-width: 85%;
-    }
-    .chat-line.self {
-      align-self: flex-end;
-      align-items: flex-end;
-    }
-    .chat-line.other {
-      align-self: flex-start;
-      align-items: flex-start;
-    }
-    .chat-sender {
-      font-size: 0.8rem;
-      color: #aaa;
-      margin-bottom: 2px;
-    }
-
     /* ====== RESPONSIVE ====== */
     @media (max-width: 900px) {
       .left-sidebar {
@@ -347,6 +279,7 @@
       <section id="feed" class="active">
         <h2>🏠 Feed</h2>
         <p>Posts, updates, and community content will appear here.</p>
+        <!-- You can expand this later with real posts, forms, etc. -->
       </section>
 
       <!-- CHESS -->
@@ -378,31 +311,7 @@
       <!-- CHAT -->
       <section id="chat">
         <h2>💬 Chat</h2>
-
-        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
-          <button id="new-dm-btn" style="padding:8px 12px; border-radius:6px; border:1px solid #444; background:#111; color:#ddd; cursor:pointer;">
-            + New DM
-          </button>
-          <button id="new-group-btn" style="padding:8px 12px; border-radius:6px; border:1px solid #444; background:#111; color:#ddd; cursor:pointer;">
-            + New Group
-          </button>
-        </div>
-
-        <div style="display:flex; gap:16px; min-height:420px;">
-          <!-- Conversations list -->
-          <div id="conversations-panel" style="width:220px; border:1px solid #444; border-radius:8px; background:#0e1220; overflow:auto;">
-            <div style="padding:10px; color:#aaa;">No conversations yet.</div>
-          </div>
-
-          <!-- Chat area -->
-          <div id="chat-panel" style="flex:1; border:1px solid #444; border-radius:8px; background:#0e1220; display:flex; flex-direction:column;">
-            <div id="chat-messages" style="flex:1; padding:10px; overflow:auto;"></div>
-            <div style="display:flex; gap:8px; padding:10px; border-top:1px solid #333;">
-              <input id="chat-input" type="text" placeholder="Type a message…" style="flex:1; padding:8px 10px; border-radius:6px; border:1px solid #444; background:#111; color:#eee;">
-              <button id="chat-send" style="padding:8px 14px; border-radius:6px; border:none; background:#6366f1; color:#fff; cursor:pointer;">Send</button>
-            </div>
-          </div>
-        </div>
+        <p>Real-time chat and DMs will appear here.</p>
       </section>
 
       <!-- AI -->
@@ -438,45 +347,6 @@
       <section id="profile">
         <h2>👤 Profile</h2>
         <p>Your profile, stats, and settings will appear here.</p>
-
-        <h3 style="margin-top:24px;">💬 Message style</h3>
-        <div style="display:flex; flex-wrap:wrap; gap:16px; margin-top:10px;">
-
-          <!-- Color picker -->
-          <div style="min-width:200px; flex:1 1 200px;">
-            <label style="display:block; margin-bottom:6px; font-weight:600;">Message bubble color</label>
-            <input id="msg-color" type="color" value="#6366f1"
-                   style="width:100%; height:44px; border:none; background:#111; border-radius:6px; cursor:pointer;">
-          </div>
-
-          <!-- Text style -->
-          <div style="min-width:200px; flex:1 1 200px;">
-            <label style="display:block; margin-bottom:6px; font-weight:600;">Text style</label>
-            <select id="msg-style" style="width:100%; padding:10px; border-radius:6px; border:1px solid #444; background:#111; color:#eee;">
-              <option value="normal">Normal</option>
-              <option value="bold">Bold</option>
-              <option value="italic">Italic</option>
-              <option value="bold-italic">Bold + Italic</option>
-            </select>
-          </div>
-
-          <!-- Preview -->
-          <div style="min-width:260px; flex:1 1 260px;">
-            <label style="display:block; margin-bottom:6px; font-weight:600;">Preview</label>
-            <div id="msg-preview" style="padding:10px; border-radius:8px; background:#111; border:1px solid #444;">
-              <div class="msg-bubble" style="display:inline-block; padding:8px 12px; border-radius:12px; background:#6366f1; color:#fff; max-width:100%;">
-                This is how your messages will look.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div style="margin-top:12px;">
-          <button id="save-msg-style" style="padding:8px 14px; border-radius:6px; border:none; background:#22c55e; color:#fff; cursor:pointer;">
-            Save message style
-          </button>
-          <span id="msg-saved-note" style="margin-left:10px; color:#86efac; display:none;">Saved!</span>
-        </div>
       </section>
 
       <!-- FIRST AID -->
@@ -530,18 +400,6 @@
     </main>
   </div>
 
-  <!-- CHAT MODAL -->
-  <div id="chat-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:2000; align-items:center; justify-content:center; padding:16px;">
-    <div style="background:#1a1f2e; border:1px solid #333; border-radius:10px; padding:16px; width:100%; max-width:360px;">
-      <h3 id="chat-modal-title" style="margin-top:0;">New conversation</h3>
-      <div id="chat-modal-body" style="margin-bottom:12px;"></div>
-      <div style="display:flex; gap:8px; justify-content:flex-end;">
-        <button id="chat-modal-cancel" style="padding:8px 12px; border-radius:6px; border:1px solid #444; background:#111; color:#ddd; cursor:pointer;">Cancel</button>
-        <button id="chat-modal-ok" style="padding:8px 12px; border-radius:6px; border:none; background:#6366f1; color:#fff; cursor:pointer;">Create</button>
-      </div>
-    </div>
-  </div>
-
   <!-- JAVASCRIPT -->
   <script>
     // ====== AUTH LOGIC (SIMULATED) ======
@@ -567,6 +425,7 @@
     }
 
     function limitFeaturesForGuest() {
+      // Example: disable posting and chat for guests
       const postButtons = document.querySelectorAll('[data-action="create-post"], #create-post-btn');
       postButtons.forEach(el => {
         el.disabled = true;
@@ -644,6 +503,7 @@
       const boardEl = document.getElementById('board');
       if (!boardEl) return;
 
+      // Avoid re-initializing if already created
       if (boardEl.dataset.chessInit === '1') return;
       boardEl.dataset.chessInit = '1';
 
@@ -667,6 +527,7 @@
 
         if (move === null) return 'snapback';
         updateStatus();
+        // Here you can send move to backend for online play later
       }
 
       function onSnapEnd() {
@@ -744,25 +605,11 @@
 
     function addAiMessage(text, isUser = false) {
       if (!aiChat) return;
-
-      const style = localStorage.getItem('cyclone_msg_style') || 'normal';
-      const color = localStorage.getItem('cyclone_msg_color') || '#6366f1';
-
       const line = document.createElement('div');
       line.style.marginBottom = '6px';
-
-      const bubble = document.createElement('span');
-      bubble.className = 'msg-bubble style-' + style;
-      bubble.style.background = isUser ? color : '#334155';
-      bubble.textContent = text;
-
-      const prefix = document.createElement('strong');
-      prefix.textContent = isUser ? 'You: ' : 'Cyclone AI: ';
-      prefix.style.color = '#ddd';
-
-      line.appendChild(prefix);
-      line.appendChild(bubble);
-
+      line.innerHTML = isUser
+        ? `<strong>You:</strong> ${text}`
+        : `<strong>Cyclone AI:</strong> ${text}`;
       aiChat.appendChild(line);
       aiChat.scrollTop = aiChat.scrollHeight;
     }
@@ -798,77 +645,10 @@
       if (e.key === 'Enter') handleAiSend();
     });
 
-    // ====== MESSAGE STYLE SETTINGS ======
-    const msgColorInput = document.getElementById('msg-color');
-    const msgStyleSelect = document.getElementById('msg-style');
-    const msgPreview = document.getElementById('msg-preview');
-    const saveMsgStyleBtn = document.getElementById('save-msg-style');
-    const msgSavedNote = document.getElementById('msg-saved-note');
-
-    function applyMessageStyle(color, style) {
-      document.documentElement.style.setProperty('--user-msg-color', color);
-
-      const bubble = msgPreview?.querySelector('.msg-bubble');
-      if (bubble) {
-        bubble.style.background = color;
-        bubble.classList.remove('style-normal', 'style-bold', 'style-italic', 'style-bold-italic');
-        bubble.classList.add('style-' + style);
-      }
-    }
-
-    function loadSavedMessageStyle() {
-      const savedColor = localStorage.getItem('cyclone_msg_color') || '#6366f1';
-      const savedStyle = localStorage.getItem('cyclone_msg_style') || 'normal';
-
-      if (msgColorInput) msgColorInput.value = savedColor;
-      if (msgStyleSelect) msgStyleSelect.value = savedStyle;
-
-      applyMessageStyle(savedColor, savedStyle);
-    }
-
-    function saveMessageStyle() {
-      const color = msgColorInput?.value || '#6366f1';
-      const style = msgStyleSelect?.value || 'normal';
-
-      localStorage.setItem('cyclone_msg_color', color);
-      localStorage.setItem('cyclone_msg_style', style);
-
-      applyMessageStyle(color, style);
-
-      msgSavedNote.style.display = 'inline';
-      setTimeout(() => {
-        msgSavedNote.style.display = 'none';
-      }, 1500);
-    }
-
-    saveMsgStyleBtn?.addEventListener('click', saveMessageStyle);
-
-    msgColorInput?.addEventListener('input', () => {
-      const color = msgColorInput.value;
-      const style = msgStyleSelect?.value || 'normal';
-      applyMessageStyle(color, style);
+    // ====== INIT ON LOAD ======
+    document.addEventListener('DOMContentLoaded', () => {
+      // Auth overlay is shown by default until user logs in / signs up / goes guest
     });
-
-    msgStyleSelect?.addEventListener('change', () => {
-      const color = msgColorInput?.value || '#6366f1';
-      const style = msgStyleSelect.value;
-      applyMessageStyle(color, style);
-    });
-
-    // ====== CHAT: DMs + GROUPS (LOCALSTORAGE) ======
-    const conversationsPanel = document.getElementById('conversations-panel');
-    const chatPanel = document.getElementById('chat-panel');
-    const chatMessagesEl = document.getElementById('chat-messages');
-    const chatInputEl = document.getElementById('chat-input');
-    const chatSendBtn = document.getElementById('chat-send');
-
-    const newDmBtn = document.getElementById('new-dm-btn');
-    const newGroupBtn = document.getElementById('new-group-btn');
-
-    const chatModalEl = document.getElementById('chat-modal');
-    const chatModalTitleEl = document.getElementById('chat-modal-title');
-    const chatModalBodyEl = document.getElementById('chat-modal-body');
-    const chatModalCancelEl = document.getElementById('chat-modal-cancel');
-    const chatModalOkEl = document.getElementById('chat-modal-ok');
-
-    let
+  </script>
+</body>
+</html>

@@ -1024,15 +1024,23 @@
     .hub-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:12px}.hub-card{padding:14px;text-align:left}.hub-card h3{margin:0 0 7px;font-size:.95rem}.hub-card p{margin:0;color:var(--muted);font-size:.78rem;line-height:1.45}.simple-page-card{max-width:1000px;padding:18px}.simple-page-card h3{margin-top:0}.tool-row{display:flex;gap:8px;margin:12px 0}.tool-row input{min-width:0;padding:10px}.tool-list-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px;margin:7px 0;border:1px solid rgba(53,185,255,.25);border-radius:7px;background:rgba(7,24,57,.72)}.tool-list-item label{display:flex;align-items:center;gap:9px;flex:1;cursor:pointer}
 
   
-    /* Falling cyber code on the normal Cyclone background. */
-    #matrix-rain { position: fixed; inset: 0; z-index: -1; width: 100vw; height: 100vh; pointer-events: none; opacity: .34; }
-    @media (prefers-reduced-motion: reduce) { #matrix-rain { display: none; } }
+    /* Personal hacker background: each visitor chooses and saves their own glow colour. */
+    body.bg-hacker {
+      background-color: #020805;
+      background-image:
+        radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--hacker-colour, #39ff88) 26%, transparent), transparent 38%),
+        linear-gradient(rgba(0,0,0,.58), rgba(0,0,0,.86)),
+        repeating-linear-gradient(0deg, color-mix(in srgb, var(--hacker-colour, #39ff88) 13%, transparent) 0 1px, transparent 1px 28px),
+        repeating-linear-gradient(90deg, color-mix(in srgb, var(--hacker-colour, #39ff88) 10%, transparent) 0 1px, transparent 1px 28px);
+      background-attachment: fixed;
+    }
+    body.bg-hacker::after { content: "01001000 01000001 01000011 01001011 00100000 01000011 01011001 01000011 01001100 01001111 01001110 01000101"; position: fixed; inset: 70px 0 auto 72px; z-index: -1; overflow: hidden; color: var(--hacker-colour, #39ff88); opacity: .07; font: 700 clamp(16px, 2.2vw, 32px)/2 monospace; letter-spacing: .28em; word-spacing: 2em; pointer-events: none; white-space: normal; text-shadow: 0 0 12px var(--hacker-colour, #39ff88); }
+    .hacker-colour-preview { height: 38px; border: 1px solid rgba(57,255,136,.45); border-radius: 7px; box-shadow: 0 0 14px color-mix(in srgb, var(--hacker-colour, #39ff88) 42%, transparent); }
 
   </style>
 </head>
 
 <body>
-  <canvas id="matrix-rain" aria-hidden="true"></canvas>
   <!-- Auth -->
   <div id="auth-overlay" class="auth-overlay">
     <div class="auth-box">
@@ -1397,10 +1405,18 @@
           <label for="bg-type">Background type</label>
           <select id="bg-type">
             <option value="default">Default galaxy</option>
+            <option value="hacker">Hacker grid (custom colour)</option>
             <option value="solid">Solid colour</option>
             <option value="gradient">Gradient</option>
             <option value="image">Image from device</option>
           </select>
+
+          <div id="hacker-controls" style="margin-top:12px;display:none;">
+            <label for="hacker-colour">Hacker glow colour</label>
+            <input id="hacker-colour" type="color" value="#39ff88">
+            <div class="hacker-colour-preview" style="margin-top:8px;"></div>
+            <small class="muted">This saves separately for each person and browser.</small>
+          </div>
 
           <div id="solid-controls" style="margin-top:12px;display:none;">
             <label for="solid-colour">Solid colour</label>
@@ -2946,6 +2962,8 @@
       const gradOne = document.getElementById("gradient-1");
       const gradTwo = document.getElementById("gradient-2");
       const gradThree = document.getElementById("gradient-3");
+      const hackerColour = document.getElementById("hacker-colour");
+      const hackerPreview = document.querySelector(".hacker-colour-preview");
       const previewBackground = document.getElementById("background-preview");
 
       let imageData = localStorage.getItem("cyclone-background-image") || "";
@@ -2955,17 +2973,24 @@
       gradOne.value = localStorage.getItem("cyclone-background-gradient-one") || "#020816";
       gradTwo.value = localStorage.getItem("cyclone-background-gradient-two") || "#07336d";
       gradThree.value = localStorage.getItem("cyclone-background-gradient-three") || "#160b3d";
+      hackerColour.value = localStorage.getItem("cyclone-hacker-colour") || "#39ff88";
 
       function showBackgroundControls() {
         document.getElementById("solid-controls").style.display = type.value === "solid" ? "block" : "none";
+        document.getElementById("hacker-controls").style.display = type.value === "hacker" ? "block" : "none";
         document.getElementById("gradient-controls").style.display = type.value === "gradient" ? "block" : "none";
         document.getElementById("image-controls").style.display = type.value === "image" ? "block" : "none";
       }
 
       function applyBackground() {
-        document.body.classList.remove("bg-solid", "bg-gradient", "bg-image");
+        document.body.classList.remove("bg-solid", "bg-gradient", "bg-image", "bg-hacker");
 
-        if (type.value === "solid") {
+        if (type.value === "hacker") {
+          document.documentElement.style.setProperty("--hacker-colour", hackerColour.value);
+          document.body.classList.add("bg-hacker");
+          hackerPreview.style.background = hackerColour.value;
+          previewBackground.style.background = `linear-gradient(135deg, #020805, ${hackerColour.value})`;
+        } else if (type.value === "solid") {
           document.documentElement.style.setProperty("--solid-bg", solid.value);
           document.body.classList.add("bg-solid");
           previewBackground.style.background = solid.value;
@@ -2989,7 +3014,7 @@
         applyBackground();
       });
 
-      [solid, gradOne, gradTwo, gradThree].forEach(input => {
+      [solid, gradOne, gradTwo, gradThree, hackerColour].forEach(input => {
         input.addEventListener("input", applyBackground);
       });
 
@@ -3013,6 +3038,7 @@
       document.getElementById("save-background-settings").addEventListener("click", () => {
         localStorage.setItem("cyclone-background-type", type.value);
         localStorage.setItem("cyclone-background-solid", solid.value);
+        localStorage.setItem("cyclone-hacker-colour", hackerColour.value);
         localStorage.setItem("cyclone-background-gradient-one", gradOne.value);
         localStorage.setItem("cyclone-background-gradient-two", gradTwo.value);
         localStorage.setItem("cyclone-background-gradient-three", gradThree.value);
@@ -3043,44 +3069,6 @@
       const notes=document.getElementById('notes-area');if(notes){notes.value=localStorage.getItem('cyclone_notes')||'';document.getElementById('notes-save').addEventListener('click',()=>{localStorage.setItem('cyclone_notes',notes.value);const n=document.getElementById('notes-note');n.style.display='inline';setTimeout(()=>n.style.display='none',1200)})}
     }
 
-    /* ------------------------- Falling code backdrop ------------------------- */
-    function initMatrixRain() {
-      const canvas = document.getElementById("matrix-rain");
-      const ctx = canvas?.getContext("2d");
-      if (!ctx) return;
-      const characters = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&*+-<>";
-      const fontSize = 16;
-      let columns = 0;
-      let drops = [];
-      function resizeRain() {
-        const ratio = Math.min(window.devicePixelRatio || 1, 2);
-        canvas.width = Math.floor(window.innerWidth * ratio);
-        canvas.height = Math.floor(window.innerHeight * ratio);
-        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-        columns = Math.ceil(window.innerWidth / fontSize);
-        drops = Array.from({ length: columns }, () => Math.random() * -80);
-      }
-      function drawRain() {
-        requestAnimationFrame(drawRain);
-        ctx.fillStyle = "rgba(2, 8, 22, .09)";
-        ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-        ctx.font = `bold ${fontSize}px monospace`;
-        ctx.fillStyle = "#28cfff";
-        ctx.shadowColor = "#14b8ff";
-        ctx.shadowBlur = 8;
-        for (let column = 0; column < columns; column++) {
-          const character = characters[Math.floor(Math.random() * characters.length)];
-          ctx.fillText(character, column * fontSize, drops[column] * fontSize);
-          if (drops[column] * fontSize > window.innerHeight && Math.random() > .975) drops[column] = Math.random() * -30;
-          drops[column] += .52 + Math.random() * .35;
-        }
-        ctx.shadowBlur = 0;
-      }
-      resizeRain();
-      window.addEventListener("resize", resizeRain);
-      drawRain();
-    }
-
     /* ------------------------------ Init ------------------------------ */
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -3093,7 +3081,6 @@
       initAI();
       initChat();
       initProfile();
-      initMatrixRain();
       initExtras();
 
       initSelectionList("study-list", "study-content", subjects);

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Cyclone Chess Pro</title>
 <style>
-:root{--bg:#02060a;--panel:#0b1220;--panel2:#101a2e;--line:#1d2c48;--text:#eaf4ff;--dim:#8ea3c4;--accent:#3ad6ff;--select:#ffd54a;--last:rgba(58,214,255,.25);--board-light:#dfe7ef;--board-dark:#6d8aa6;--white-piece:#fff;--black-piece:#111;--matrix:#39ff14;--matrix-speed:1;--matrix-size:16}
+:root{--bg:#02060a;--panel:#0b1220;--panel2:#101a2e;--line:#1d2c48;--text:#eaf4ff;--dim:#8ea3c4;--accent:#3ad6ff;--select:#ffd54a;--last:rgba(58,214,255,.25);--board-light:#dfe7ef;--board-dark:#6d8aa6;--white-piece:#fff;--black-piece:#111;--matrix:#39ff14}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;overflow-x:hidden}
 #matrix{position:fixed;inset:0;z-index:-1}
 .top{height:58px;display:flex;align-items:center;gap:14px;padding:0 18px;background:rgba(4,10,20,.88);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;backdrop-filter:blur(8px)}
@@ -184,13 +184,13 @@ function best(s,d){const ms=all(s);if(!ms.length)return null;let bm=ms[0],sc=s.t
 for(const m of ms){const v=search(apply(s,m),d-1,-1e9,1e9);if(s.t=="w"?v>sc:v<sc){sc=v;bm=m}}return{m:bm,score:sc/100}}
 
 function render(){const board=document.getElementById("board");board.innerHTML="";
-const legal=sel?legal(game,sel[0],sel[1]):[],kp=check(game,game.t)?king(game,game.t):null;
+const moves=sel?legal(game,sel[0],sel[1]):[],kp=check(game,game.t)?king(game,game.t):null;
 for(let dr=0;dr<8;dr++)for(let dc=0;dc<8;dc++){const r=flip?7-dr:dr,c=flip?7-dc:dc,d=document.createElement("div");
 d.className="sq "+((r+c)%2==0?"light":"dark");const p=game.b[r][c],sq=name(r,c);
 if(game.last&&(game.last.from==sq||game.last.to==sq))d.classList.add("last");
 if(sel&&sel[0]==r&&sel[1]==c)d.classList.add("selected");
 if(kp&&kp[0]==r&&kp[1]==c)d.classList.add("check");
-const lm=legal.find(m=>m.tr==r&&m.tc==c);
+const lm=moves.find(m=>m.tr==r&&m.tc==c);
 if(lm&&document.getElementById("dots").checked){const z=document.createElement("div");z.className=(p||lm.ep)?"ring":"dot";d.appendChild(z)}
 if(p){const e=document.createElement("div");e.className="piece "+(p[0]=="b"?"black ":"")+document.getElementById("pieceStyle").value;e.textContent=G[p[0]][p[1]];e.draggable=true;
 e.addEventListener("dragstart",ev=>ev.dataTransfer.setData("text/plain",r+","+c));d.appendChild(e)}
